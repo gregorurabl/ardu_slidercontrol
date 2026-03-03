@@ -6,6 +6,107 @@
 **Platform:** Arduino Mega 2560 (AZ-Delivery Clone)  
 **Slider:** Rollei / iFootage Shark S1
 
+> **Work in Progress** — This documentation is incomplete and subject to change without notice.
+
+> **Disclaimer:** This project is shared for educational and personal reference purposes only. No support is provided. If you choose to replicate this project, you do so entirely at your own risk. The author accepts no responsibility for any damage to equipment, components, cameras, or any other property, nor for any personal injury, that may result from building or operating this or a similar system. Working with stepper motors, motor drivers and external power supplies involves voltages and currents that can cause permanent hardware damage if wired incorrectly. Always verify your wiring before applying power.
+
+---
+
+## Overview
+
+Slidercontrol V2.1 is a fully self-contained motorized camera slider controller built around an Arduino Mega 2560. It drives a NEMA 17 stepper motor with planetary gearbox via an A4988 driver and provides a touchscreen UI on a 3.5" TFT shield. An optional ultrasonic sensor acts as an automatic end-stop, and a galvanically isolated camera trigger fires a Canon DSLR in sync with slider movement for timelapse sequences.
+
+### What This Project Does
+
+The controller moves a camera along a slider rail at configurable speed, distance and direction. Three operating modes are available:
+
+- **Normal Run** — moves the slider a set distance at a set speed, with optional return to start position
+- **Manual Run** — continuous motor rotation for free-form positioning, start/stop via touchscreen
+- **Timelapse** — divides the total travel into equal sub-steps, pauses at each position for a configurable delay, and optionally fires the camera shutter at every stop
+
+All parameters (speed, distance, ramp, delay, subdivisions) are adjusted on the touchscreen. The controller can also be operated via serial commands over USB.
+
+### What You Need
+
+**Electronics**
+| Item | Notes |
+|---|---|
+| Arduino Mega 2560 (or clone) | AZ-Delivery clone confirmed working |
+| 3.5" parallel TFT LCD shield, 480×320 | MCUFRIEND_kbv-compatible |
+| A4988 stepper driver breakout board | Check R_CS marking before use (see [3.3](#33-stepper-motor-driver-a4988)) |
+| NEMA 17 stepper motor | 17HS19-1684s-PG14 with 1:14 planetary gearbox used here |
+| 100 µF electrolytic capacitor | Motor supply decoupling, placed close to A4988 |
+| 12V / 5A DC power supply | Motor supply |
+| USB power bank or 5V supply | Arduino logic supply |
+| 4N33 optocoupler + 390 Ω resistor | Camera trigger circuit (optional) |
+| 2.5 mm TRS female jack | Camera trigger output (optional) |
+| 2.5 mm male to Canon N3 female cable | Off-the-shelf adapter cable (optional) |
+| HC-SR04 ultrasonic sensor | End-stop safety (optional, mutually exclusive with camera trigger) |
+
+**Mechanical**
+- Camera slider with accessible drive shaft (e.g. Rollei / iFootage Shark S1)
+- 3D-printed motor mount adapted to your slider model (see [1.1 Sources](#11-project-base))
+
+**Tools**
+- Soldering iron
+- Multimeter — required for A4988 current limit calibration
+
+### Wiring Overview
+
+```
+USB Power Bank ──────────────────────── Arduino Mega 2560
+                                               │
+                         ┌─────────────────────┼──────────────────┐
+                         │                     │                  │
+                    TFT Shield            A4988 Driver        D47 / D49
+                  (direct plug-in         VDD  ← 5V           Camera trigger
+                   onto Mega headers)     GND  ← GND (logic)  or HC-SR04
+                                          EN   ← D23
+                                          STEP ← D25
+                                          DIR  ← D27
+                                               │
+12V / 5A PSU ──── [100 µF] ──── VMOT          │
+             └──────────────── GND (motor)    │
+                                          1A / 1B / 2A / 2B
+                                               │
+                                         Stepper Motor
+```
+
+The TFT shield plugs directly onto the Arduino Mega headers — no separate display wiring required. Motor, A4988 and power supply are wired as a separate circuit. The camera trigger is a standalone optocoupler circuit connected to D47 and GND.
+
+**Important:** The Arduino (logic) and the motor driver (power) use separate ground connections that share a common reference point only at the DC jack. See [Ground Separation](#33-stepper-motor-driver-a4988) for details.
+
+### Serial / USB Remote Control
+
+The controller can be operated remotely over USB via any serial terminal (e.g. Arduino Serial Monitor, PuTTY) at **115200 baud**.
+
+Commands are comma-separated strings terminated with a newline (`\n`). Each field can optionally carry a label prefix using a colon (`label:value`) — the parser strips everything up to and including the last colon, so both formats are accepted.
+
+**Command format:**
+
+```
+mode,speed,distance,ramp,time,steps
+```
+
+| Index | Field | Description |
+|---|---|---|
+| 0 | mode | `normal`, `timelapse`, or `rth` (case-insensitive) |
+| 1 | speed | Motor speed (steps/s) |
+| 2 | distance | Travel distance in steps |
+| 3 | ramp | Ramp/acceleration length in steps |
+| 4 | time | Timelapse delay between stops in seconds |
+| 5 | steps | Number of timelapse subdivisions (minimum 2) |
+
+**Examples:**
+
+```
+normal,600,33000,0,0,2
+timelapse,400,33000,0,30,10
+rth,0,0,0,0,0
+```
+
+Unused fields still need to be present as placeholders. For `rth`, all fields after index 0 are ignored. The controller responds with status messages over the same serial connection.
+
 ---
 
 ## Table of Contents
@@ -24,6 +125,21 @@
    - [3.2 Touchscreen (Resistive)](#32-touchscreen-resistive)
    - [3.3 Stepper Motor Driver (A4988)](#33-stepper-motor-driver-a4988)
    - [3.4 Sonar / Camera Trigger (shared)](#34-sonar--camera-trigger-shared)
+
+---
+
+## Schematic
+
+> **Work in Progress** — Full wiring schematic is currently being created in KiCad 9. The `.kicad_sch` file will be added to this repository once complete.
+
+The schematic covers:
+- Arduino Mega 2560 with all used pin connections
+- A4988 driver with motor power supply, 100 µF decoupling capacitor and stepper motor
+- Camera trigger circuit (4N33, R1, 2.5 mm jack)
+- HC-SR04 ultrasonic sensor (optional, shared pins D47/D49)
+- TFT shield pin mapping
+
+In the meantime, refer to the pin reference tables in [Section 3](#3-pin-reference-arduino-mega-2560) and the circuit diagrams in [Section 2.4](#24-camera-trigger-circuit) and [Section 3.3](#33-stepper-motor-driver-a4988).
 
 ---
 
