@@ -258,6 +258,49 @@ Both grounds share a common reference point at the power supply / DC jack, but s
 
 > Coil assignment and wire color depend on the specific motor. For the **17HS19-1684s-PG14** consult the datasheet. Swapping both wires of one coil reverses that coil's polarity and changes rotation direction — equivalent to toggling DIR.
 
+
+#### Current Limit Calibration (VREF)
+
+The A4988 current limit must be set **before connecting the motor**. An incorrectly set current limit risks overheating or damaging the driver and motor.
+
+**Required tools:** multimeter, small flathead screwdriver
+
+**Formula (per Pololu):**
+
+```
+VREF = I_max x 8 x R_CS
+```
+
+| Variable | Description |
+|---|---|
+| VREF | Reference voltage to set (measured at potentiometer) |
+| I_max | Target current limit in amps |
+| R_CS | Current sense resistor value on the board |
+
+**Determine R_CS first** by inspecting the two small SMD resistors next to the A4988 chip:
+
+| Marking | R_CS value |
+|---|---|
+| R050 | 0.05 Ohm (original Pololu board) |
+| R100 | 0.10 Ohm (most Chinese clones) |
+| R200 | 0.20 Ohm |
+
+**Measurement procedure:** Connect multimeter negative lead to GND, positive lead to the potentiometer wiper (the metal adjustment screw). Adjust the potentiometer while reading the voltage.
+
+**Example calculation for the 17HS19-1684s-PG14 (rated 1.68 A):**
+
+A conservative target of 70% of rated current reduces heat while maintaining reliable torque:
+
+```
+I_target = 1.68 A x 0.70 = 1.18 A
+VREF (R100) = 1.18 x 8 x 0.10 = 0.94 V
+VREF (R050) = 1.18 x 8 x 0.05 = 0.47 V
+```
+
+Per Mega-Testberichte.de, a VREF of **~0.8 V** on an R100 board was found to work well in practice with this motor type, providing reliable torque with acceptable heat generation.
+
+> **Warning (per Pololu):** Never connect or disconnect the stepper motor while the driver is powered. This can permanently destroy the A4988. Set VREF before attaching the motor, and increase gradually from a low starting value.
+
 ### 3.4 Sonar / Camera Trigger (shared)
 
 | Signal | Arduino Mega Pin | Notes |
