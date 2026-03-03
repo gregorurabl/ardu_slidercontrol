@@ -40,7 +40,8 @@ This project is based on a guide by Marco Kleine-Albers (Mega-Testberichte.de) a
 | Display | Niunion 3.5" TFT LCD Shield, 480×320, 8-bit parallel, resistive touchscreen, MCUFRIEND_kbv-compatible — ASIN: B08KG51VLW | [amazon.de](https://www.amazon.de/dp/B08KG51VLW) ✅ |
 | Motor Mount (3D Print) | Parametric mount for iFootage Shark S1 motorization. Author: Benjamin (Hamburg). Original page no longer available. | mein-slider.de/ifootage-shark-s1-motorhalterung ❌ offline |
 | Camera Trigger Reference | Martyn Currey — "Using an Arduino and an optocoupler to activate a camera shutter" — basis for optocoupler circuit design, resistor calculation and jack pinout | [martyncurrey.com/activating-the-shutter-release](https://www.martyncurrey.com/activating-the-shutter-release/) ✅ |
-| Microstepping Reference | A4988 driver pin mapping and microstepping mode table | [Pololu Robotics & Electronics](https://www.pololu.com/product/1182) ✅ |
+| Microstepping Reference | A4988 driver pin mapping and microstepping mode table | [lastminuteengineers.com](https://lastminuteengineers.com/a4988-stepper-motor-driver-arduino-tutorial/) ✅ |
+| A4988 Product & Datasheet | Pololu A4988 stepper driver carrier — official product page incl. schematic, pinout and datasheet | [pololu.com/product/1182](https://www.pololu.com/product/1182) ✅ |
 
 ### 1.2 Arduino Libraries
 
@@ -66,7 +67,7 @@ This project is based on a guide by Marco Kleine-Albers (Mega-Testberichte.de) a
 | Stepper Motor | Stepperonline 17HS19-1684s-PG14 — 1.8°/step — Planetary Gearbox 1:14 |
 | Motor Driver | A4988 (final version; TMC2209 tested previously, see [2.2](#22-hardware-history--incidents)) |
 | Slider Platform | Rollei / iFootage Shark S1 |
-| Camera Trigger | 4N33 optocoupler + 390 Ω resistor + 3.5 mm TRS jack |
+| Camera Trigger | 4N33 optocoupler + 390 Ω resistor + 2.5 mm TRS jack |
 | Ultrasonic Sensor (opt.) | HC-SR04 (end-stop safety) |
 
 ---
@@ -102,17 +103,47 @@ The Stepperonline 17HS19-1684s-PG14 features an integrated planetary gearbox wit
 
 ### 2.4 Camera Trigger Circuit
 
-The camera trigger uses a 4N33 optocoupler to provide galvanic isolation between the Arduino and the camera. The shutter contact is connected via a 3.5 mm stereo TRS jack, as natively supported by most mirrorless and DSLR cameras (e.g. Sony, Olympus, Panasonic).
+The camera trigger provides galvanic isolation between the Arduino and the camera using a 4N33 optocoupler. The Arduino is directly wired into the optocoupler circuit. The optocoupler output is connected via a soldered cable to a **2.5 mm TRS female jack** permanently mounted on the controller housing. From there, a commercially available **2.5 mm male to Canon N3 female adapter cable** connects to the camera.
 
 The circuit design follows the approach described by Martyn Currey ([martyncurrey.com/activating-the-shutter-release](https://www.martyncurrey.com/activating-the-shutter-release/)), adapted for the 4N33 with a 390 Ω input resistor.
 
+#### Signal Chain
+
+```
+Arduino D47
+    │ (direct wiring)
+    ▼
+Optocoupler circuit (4N33 + R1 390 Ω)
+    │ (soldered cable)
+    ▼
+2.5 mm TRS Female Jack  ←── permanently mounted on housing
+    │ (commercial cable: 2.5 mm Male → Canon N3 Female)
+    ▼
+Camera (Canon N3)
+```
+
+#### How It Works
+
+The Canon N3 connector places approximately 3.2V on the shutter and focus lines — **this voltage is supplied by the camera itself**, not by the Arduino. Triggering is achieved by **shorting the shutter line to ground** via the optocoupler. The optocoupler ensures there is no electrical connection between the Arduino circuit and the camera circuit, protecting the camera from any voltage on the controller side.
+
+#### Circuit
+
 ```
 Arduino D47 ──── R1 (390 Ω) ──── 4N33 Pin 1 (Anode)
-                                  4N33 Pin 2 (Cathode) ──── GND
-                                  4N33 Pin 5 (Collector) ── Jack Tip (Trigger)
-                                  4N33 Pin 4 (Emitter) ──── Jack Sleeve (GND)
+                                  4N33 Pin 2 (Cathode) ──── Arduino GND
+                                  4N33 Pin 5 (Collector) ── Jack Tip   ──[cable]── N3 Shutter (~3.2V)
+                                  4N33 Pin 4 (Emitter) ──── Jack Sleeve ──[cable]── N3 GND
                                   4N33 Pin 3 (Base) ──── NC
+                                  Jack Ring ──── NC         ──[cable]── N3 Focus (not triggered)
 ```
+
+#### 2.5 mm TRS Jack Pinout
+
+| Contact | Connected to | Via adapter cable |
+|---|---|---|
+| Tip | 4N33 Pin 5 (Collector) | N3 Shutter |
+| Ring | NC | N3 Focus (not used) |
+| Sleeve | 4N33 Pin 4 (Emitter) | N3 GND |
 
 #### Resistor Dimensioning
 
@@ -125,17 +156,11 @@ Arduino D47 ──── R1 (390 Ω) ──── 4N33 Pin 1 (Anode)
 | 4N33 maximum I_F | 60 mA |
 | Arduino pin max. current | 40 mA |
 
-9.7 mA is well within the safe operating range for both the 4N33 and the Arduino output pin. The slightly higher current compared to the 470 Ω reference design improves CTR (Current Transfer Ratio) and results in more reliable switching.
+#### Trigger Pulse
 
-#### 3.5 mm TRS Jack Pinout
+Arduino drives `TRIGGER_PIN` (D47) `LOW` to close the optocoupler and short the N3 shutter pin to ground, then returns `HIGH` to release. Pulse duration is configurable in firmware (default: 100 ms).
 
-| Contact | Function |
-|---|---|
-| Tip | Shutter trigger (connected to 4N33 collector) |
-| Ring | Focus contact (not connected in this implementation) |
-| Sleeve | GND |
-
-**Trigger pulse:** Arduino drives `TRIGGER_PIN` (D47) `LOW` to close the circuit and trigger the camera, then returns `HIGH` to release. Pulse duration is configurable in firmware (default: 100 ms).
+> **Note:** Only the shutter contact is triggered. Focus is not connected. For cameras requiring focus + shutter simultaneously (e.g. bulb mode), the focus line would need to be wired in parallel.
 
 ---
 
@@ -187,14 +212,51 @@ The PCB silkscreen uses the prefix `LCD_` (not `TFT_`). The signal `tft_CD` in f
 
 ### 3.3 Stepper Motor Driver (A4988)
 
-| Signal | Arduino Mega Pin | Notes |
+#### Control Pins (Arduino → A4988)
+
+| Signal | Arduino Mega Pin | A4988 Pin | Notes |
+|---|---|---|---|
+| ENABLE | 23 | ENABLE | Active LOW — motor disabled by default |
+| STEP | 25 | STEP | Step pulse |
+| DIR | 27 | DIR | Direction |
+| M1 | A8 | MS1 | Microstepping bit 1 — NC (disabled) |
+| M2 | A9 | MS2 | Microstepping bit 2 — NC (disabled) |
+| M3 | A10 | MS3 | Microstepping bit 3 — NC (disabled) |
+| 5V | 5V | VDD | Logic supply |
+| GND | GND | GND | Logic ground |
+
+> RESET and SLEEP are bridged together on the A4988 breakout board (tied HIGH).
+
+#### Ground Separation
+
+The A4988 has two separate GND pins that must **not** be treated as a single connection:
+
+| A4988 GND Pin | Connected to | Carries |
 |---|---|---|
-| ENABLE | 23 | Active LOW — motor disabled by default |
-| STEP | 25 | Step pulse |
-| DIR | 27 | Direction |
-| M1 | A8 | Microstepping bit 1 — disabled (NC) |
-| M2 | A9 | Microstepping bit 2 — disabled (NC) |
-| M3 | A10 | Microstepping bit 3 — disabled (NC) |
+| GND (power side, next to VMOT) | 100 µF capacitor (−), then DC jack (−) | Motor current (up to 2A) |
+| GND (logic side, next to VDD) | Arduino GND | Logic signals only (mA range) |
+
+Both grounds share a common reference point at the power supply / DC jack, but should be routed separately on the PCB or in the schematic to avoid mixing high-current motor return paths with logic ground.
+
+#### Motor Power (PSU → A4988)
+
+| A4988 Pin | Connection | Notes |
+|---|---|---|
+| VMOT | 12V PSU (+) | Motor supply voltage — 8–35V supported |
+| GND (power side) | 12V PSU (−) | Motor ground |
+
+**100 µF electrolytic capacitor** across VMOT and GND, placed as close to the A4988 as possible. Protects the driver from voltage spikes caused by the motor's inductance.
+
+#### Motor Coils (A4988 → Stepper)
+
+| A4988 Pin | Stepper Wire | Coil |
+|---|---|---|
+| 1A | — | Coil A, terminal 1 |
+| 1B | — | Coil A, terminal 2 |
+| 2A | — | Coil B, terminal 1 |
+| 2B | — | Coil B, terminal 2 |
+
+> Coil assignment and wire color depend on the specific motor. For the **17HS19-1684s-PG14** consult the datasheet. Swapping both wires of one coil reverses that coil's polarity and changes rotation direction — equivalent to toggling DIR.
 
 ### 3.4 Sonar / Camera Trigger (shared)
 
