@@ -1,0 +1,155 @@
+/*
+Theme Name:   GeneratePress-Child
+Theme URI:    http://example.com/twenty-fifteen-child/
+Description:  GeneratePress Child Theme
+Author:       Martyn Currey
+Author URI:   http://martyncurrey.com
+ Template:    generatepress
+ Version:     0.1
+License:      GNU General Public License v2 or later
+License URI:  http://www.gnu.org/licenses/gpl-2.0.html
+Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
+Text Domain:  GeneratePresschild
+*/
+
+body { font-size: 115%;}
+
+.main-title 			{ font-size: 3em;   line-height: 1;padding-bottom: 0.25em;}
+.site-description	{ font-size: 1.10em;   line-height: 1;padding-bottom: 0.25em;}
+
+
+.main-navigation { background-color: #eeeeee;  }
+.main-navigation .main-nav ul li a {	padding-left: 20px;	padding-right: 20px;	line-height: 2em;}
+.main-navigation .mobile-bar-items a {	padding-left: 20px;	padding-right: 20px;	line-height: 2em;}
+
+.menu-toggle {	padding: 0 20px;	line-height: 2em;	margin: 0;	font-weight: normal;	
+                text-transform: none;	font-size: 15px;	cursor: pointer;
+						 }
+
+.site-content .content-area { width: 80%;}
+.is-right-sidebar           { width: 20%;}
+
+
+.inside-navigation { border-bottom: 2px; }
+.current-menu-item { color: red;}
+.page_item         { color: red;}
+.wp-block-heading  {margin:0;}
+
+
+aside { font-size: 0.9em; }
+aside h2.wp-block-heading { font-size: 1.25em; }
+.widget-area .widget {    padding: 1em;}
+
+
+
+.wp-block-code { font-family:monospace; font-size: 0.8em; margin-top: 0.5em; margin-bottom: 0.5em; padding-top:0.5em; padding-bottom:0.5em;}
+
+.codeDescSection {}
+.codeDescSection p { margin-bottom:0; margin-top: 1.5em;}
+
+footer.site-info { margin-top: 3em;}
+
+.entry-meta {display: none;}
+
+
+
+h2.wp-block-heading {font-size: 2.1em;}
+h3.wp-block-heading {font-size: 1.6em;}
+h4.wp-block-heading {font-size: 1.25em;}
+h5.wp-block-heading {font-size: 1.25em;}
+
+
+h2.wp-block-heading {margin-top: 2em;}
+h3.wp-block-heading {margin-top: 2em;}
+h4.wp-block-heading {margin-top: 2em;}
+h5.wp-block-heading {margin-top: 1em;}
+
+
+
+.indexPageWrapper p  			{ font-size: 100%; font-weight: 300;}
+.indexPageWrapper a  			{ text-decoration: none; color: black;   }
+.indexPageWrapper a:hover { text-decoration: none; color: #777777; }
+.indexPageWrapper img 		{ padding: 0; margin: 0;}
+
+.indexLink h3.wp-block-heading {margin-top: 0em;}
+.indexLink h4.wp-block-heading {margin-top: 0.25em;}
+
+
+#dc-ad a         { text-decoration: none; color: black;   }
+#dc-ad a:hover   { text-decoration: none; color: #777777; }
+
+
+.redTitle {color: red; font-size: 2em;}
+.noTopMargin {margin-top: 0 !important;}
+.noBotMargin {margin-bottom: 0 !important;}
+.news  {font-size: 1.5em; color: red;}
+.news2 {font-size: 1.0em; color: red;}
+.alignWithText {margin-bottom: -4px; }
+.width50percentCenter { max-width: 50%; margin-left: auto; margin-right: auto;}
+.width70percentCenter { max-width: 75%; margin-left: auto; margin-right: auto;}
+
+
+.image-highlight-1 img {  box-shadow: 5px 5px 5px lightgray;}  /*   adds a drop shadow   */
+
+
+.whiteSpace1 {width:100%; height: 1em; }
+.whiteSpace2 {width:100%; height: 2em; }
+.whiteSpace3 {width:100%; height: 3em; }
+.whiteSpace4 {width:100%; height: 4em; }
+
+
+
+
+
+
+@media (max-width: 780px) 
+{
+body { font-size: 100%;}
+h1.entry-title	    {font-size: 1.85em;}
+h2.wp-block-heading {font-size: 1.7em;}
+h3.wp-block-heading {font-size: 1.5em;}
+h4.wp-block-heading {font-size: 1.5em;}
+h5.wp-block-heading {font-size: 1.5em;}
+
+h3.old-h3          {font-size: 1.25em;}
+.wp-block-table    {font-size: 90%;}
+}
+
+
+
+@media (max-width: 768px) 
+{
+body { font-size: 100%;}
+h1.entry-title	    {font-size: 1.7em;}
+h2.wp-block-heading {font-size: 1.5em;}
+h3.wp-block-heading {font-size: 1.25em;}
+h4.wp-block-heading {font-size: 1.25em;}
+h5.wp-block-heading {font-size: 1.25em;}
+
+h3.old-h3          {font-size: 1.25em;}
+.wp-block-table    {font-size: 90%;}
+}
+
+
+@media (max-width: 540px) 
+{
+.main-title      		{ font-size: 2em;   line-height: 1; padding-bottom: 0.25em;   }
+.site-description		{ font-size: 0.735em;   line-height: 1;padding-bottom: 0.25em;}
+
+h1.entry-title	    {font-size: 1.5em;}
+h2.entry-title      {font-size: 1.2em;}
+h2.wp-block-heading {font-size: 1.2em;}
+h3.wp-block-heading {font-size: 1.1em;}
+h3.comments-title   {font-size: 75%;}
+h4.wp-block-heading {font-size: 1.0em;}
+h5.wp-block-heading {font-size: 1.0em;}
+
+div.comment-content {font-size: 75%;}
+pre.wp-block-preformatted {font-size: 75%;}
+
+}
+
+
+
+
+

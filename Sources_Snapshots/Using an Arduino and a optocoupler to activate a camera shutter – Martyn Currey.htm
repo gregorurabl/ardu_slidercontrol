@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en-US"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="UTF-8">
+	<title>Using an Arduino and a optocoupler to activate a camera shutter – Martyn Currey</title>
+<meta name="robots" content="max-image-preview:large">
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternate" type="application/rss+xml" title="Martyn Currey » Feed" href="https://www.martyncurrey.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="Martyn Currey » Comments Feed" href="https://www.martyncurrey.com/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="Martyn Currey » Using an Arduino and a optocoupler to activate a camera shutter Comments Feed" href="https://www.martyncurrey.com/activating-the-shutter-release/feed/">
+<script>
+window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/15.0.3\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/15.0.3\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/www.martyncurrey.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.5.5"}};
+/*! This file is auto-generated */
+!function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===r[t]})}function u(e,t,n){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!n(e,"\ud83d\udc26\u200d\u2b1b","\ud83d\udc26\u200b\u2b1b")}return!1}function f(e,t,n){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):i.createElement("canvas"),a=r.getContext("2d",{willReadFrequently:!0}),o=(a.textBaseline="top",a.font="600 32px Arial",{});return e.forEach(function(e){o[e]=t(a,e,n)}),o}function t(e){var t=i.createElement("script");t.src=e,t.defer=!0,i.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",s=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){i.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"}),a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=function(e){c(n=e.data),a.terminate(),t(n)})}catch(e){}c(n=f(s,u,p))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+</script>
+<style id="wp-emoji-styles-inline-css">
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+</style>
+<link rel="stylesheet" id="wp-block-library-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/style.min.css" media="all">
+<style id="classic-theme-styles-inline-css">
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+</style>
+<style id="global-styles-inline-css">
+body{--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--contrast: var(--contrast);--wp--preset--color--contrast-2: var(--contrast-2);--wp--preset--color--contrast-3: var(--contrast-3);--wp--preset--color--base: var(--base);--wp--preset--color--base-2: var(--base-2);--wp--preset--color--base-3: var(--base-3);--wp--preset--color--accent: var(--accent);--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}body .is-layout-flex{flex-wrap: wrap;align-items: center;}body .is-layout-flex > *{margin: 0;}body .is-layout-grid{display: grid;}body .is-layout-grid > *{margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+.wp-block-navigation a:where(:not(.wp-element-button)){color: inherit;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+.wp-block-pullquote{font-size: 1.5em;line-height: 1.6;}
+</style>
+<link rel="stylesheet" id="cntctfrm_form_style-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/form_style.css" media="all">
+<link rel="stylesheet" id="wpdm-font-awesome-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/all.min.css" media="all">
+<link rel="stylesheet" id="wpdm-frontend-css-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/bootstrap.min.css" media="all">
+<link rel="stylesheet" id="wpdm-front-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/front.css" media="all">
+<link rel="stylesheet" id="fancybox-for-wp-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/fancybox.css" media="all">
+<link rel="stylesheet" id="wp-syntax-css-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/wp-syntax.css" media="all">
+<link rel="stylesheet" id="parent-style-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/style.css" media="all">
+<link rel="stylesheet" id="generate-comments-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/comments.min.css" media="all">
+<link rel="stylesheet" id="generate-style-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/main.min.css" media="all">
+<style id="generate-style-inline-css">
+body{background-color:var(--base-2);color:var(--contrast);}a{color:var(--accent);}a{text-decoration:underline;}.entry-title a, .site-branding a, a.button, .wp-block-button__link, .main-navigation a{text-decoration:none;}a:hover, a:focus, a:active{color:var(--contrast);}.wp-block-group__inner-container{max-width:1200px;margin-left:auto;margin-right:auto;}:root{--contrast:#222222;--contrast-2:#575760;--contrast-3:#b2b2be;--base:#f0f0f0;--base-2:#f7f8f9;--base-3:#ffffff;--accent:#1e73be;}:root .has-contrast-color{color:var(--contrast);}:root .has-contrast-background-color{background-color:var(--contrast);}:root .has-contrast-2-color{color:var(--contrast-2);}:root .has-contrast-2-background-color{background-color:var(--contrast-2);}:root .has-contrast-3-color{color:var(--contrast-3);}:root .has-contrast-3-background-color{background-color:var(--contrast-3);}:root .has-base-color{color:var(--base);}:root .has-base-background-color{background-color:var(--base);}:root .has-base-2-color{color:var(--base-2);}:root .has-base-2-background-color{background-color:var(--base-2);}:root .has-base-3-color{color:var(--base-3);}:root .has-base-3-background-color{background-color:var(--base-3);}:root .has-accent-color{color:var(--accent);}:root .has-accent-background-color{background-color:var(--accent);}.top-bar{background-color:#636363;color:#ffffff;}.top-bar a{color:#ffffff;}.top-bar a:hover{color:#303030;}.site-header{background-color:var(--base-3);}.main-title a,.main-title a:hover{color:var(--contrast);}.site-description{color:var(--contrast-2);}.mobile-menu-control-wrapper .menu-toggle,.mobile-menu-control-wrapper .menu-toggle:hover,.mobile-menu-control-wrapper .menu-toggle:focus,.has-inline-mobile-toggle #site-navigation.toggled{background-color:rgba(0, 0, 0, 0.02);}.main-navigation,.main-navigation ul ul{background-color:var(--base-3);}.main-navigation .main-nav ul li a, .main-navigation .menu-toggle, .main-navigation .menu-bar-items{color:var(--contrast);}.main-navigation .main-nav ul li:not([class*="current-menu-"]):hover > a, .main-navigation .main-nav ul li:not([class*="current-menu-"]):focus > a, .main-navigation .main-nav ul li.sfHover:not([class*="current-menu-"]) > a, .main-navigation .menu-bar-item:hover > a, .main-navigation .menu-bar-item.sfHover > a{color:var(--accent);}button.menu-toggle:hover,button.menu-toggle:focus{color:var(--contrast);}.main-navigation .main-nav ul li[class*="current-menu-"] > a{color:var(--accent);}.navigation-search input[type="search"],.navigation-search input[type="search"]:active, .navigation-search input[type="search"]:focus, .main-navigation .main-nav ul li.search-item.active > a, .main-navigation .menu-bar-items .search-item.active > a{color:var(--accent);}.main-navigation ul ul{background-color:var(--base);}.separate-containers .inside-article, .separate-containers .comments-area, .separate-containers .page-header, .one-container .container, .separate-containers .paging-navigation, .inside-page-header{background-color:var(--base-3);}.entry-title a{color:var(--contrast);}.entry-title a:hover{color:var(--contrast-2);}.entry-meta{color:var(--contrast-2);}.sidebar .widget{background-color:var(--base-3);}.footer-widgets{background-color:var(--base-3);}.site-info{background-color:var(--base-3);}input[type="text"],input[type="email"],input[type="url"],input[type="password"],input[type="search"],input[type="tel"],input[type="number"],textarea,select{color:var(--contrast);background-color:var(--base-2);border-color:var(--base);}input[type="text"]:focus,input[type="email"]:focus,input[type="url"]:focus,input[type="password"]:focus,input[type="search"]:focus,input[type="tel"]:focus,input[type="number"]:focus,textarea:focus,select:focus{color:var(--contrast);background-color:var(--base-2);border-color:var(--contrast-3);}button,html input[type="button"],input[type="reset"],input[type="submit"],a.button,a.wp-block-button__link:not(.has-background){color:#ffffff;background-color:#55555e;}button:hover,html input[type="button"]:hover,input[type="reset"]:hover,input[type="submit"]:hover,a.button:hover,button:focus,html input[type="button"]:focus,input[type="reset"]:focus,input[type="submit"]:focus,a.button:focus,a.wp-block-button__link:not(.has-background):active,a.wp-block-button__link:not(.has-background):focus,a.wp-block-button__link:not(.has-background):hover{color:#ffffff;background-color:#3f4047;}a.generate-back-to-top{background-color:rgba( 0,0,0,0.4 );color:#ffffff;}a.generate-back-to-top:hover,a.generate-back-to-top:focus{background-color:rgba( 0,0,0,0.6 );color:#ffffff;}:root{--gp-search-modal-bg-color:var(--base-3);--gp-search-modal-text-color:var(--contrast);--gp-search-modal-overlay-bg-color:rgba(0,0,0,0.2);}@media (max-width:768px){.main-navigation .menu-bar-item:hover > a, .main-navigation .menu-bar-item.sfHover > a{background:none;color:var(--contrast);}}.nav-below-header .main-navigation .inside-navigation.grid-container, .nav-above-header .main-navigation .inside-navigation.grid-container{padding:0px 20px 0px 20px;}.site-main .wp-block-group__inner-container{padding:40px;}.separate-containers .paging-navigation{padding-top:20px;padding-bottom:20px;}.entry-content .alignwide, body:not(.no-sidebar) .entry-content .alignfull{margin-left:-40px;width:calc(100% + 80px);max-width:calc(100% + 80px);}.rtl .menu-item-has-children .dropdown-menu-toggle{padding-left:20px;}.rtl .main-navigation .main-nav ul li.menu-item-has-children > a{padding-right:20px;}@media (max-width:768px){.separate-containers .inside-article, .separate-containers .comments-area, .separate-containers .page-header, .separate-containers .paging-navigation, .one-container .site-content, .inside-page-header{padding:30px;}.site-main .wp-block-group__inner-container{padding:30px;}.inside-top-bar{padding-right:30px;padding-left:30px;}.inside-header{padding-right:30px;padding-left:30px;}.widget-area .widget{padding-top:30px;padding-right:30px;padding-bottom:30px;padding-left:30px;}.footer-widgets-container{padding-top:30px;padding-right:30px;padding-bottom:30px;padding-left:30px;}.inside-site-info{padding-right:30px;padding-left:30px;}.entry-content .alignwide, body:not(.no-sidebar) .entry-content .alignfull{margin-left:-30px;width:calc(100% + 60px);max-width:calc(100% + 60px);}.one-container .site-main .paging-navigation{margin-bottom:20px;}}/* End cached CSS */.is-right-sidebar{width:30%;}.is-left-sidebar{width:30%;}.site-content .content-area{width:70%;}@media (max-width:768px){.main-navigation .menu-toggle,.sidebar-nav-mobile:not(#sticky-placeholder){display:block;}.main-navigation ul,.gen-sidebar-nav,.main-navigation:not(.slideout-navigation):not(.toggled) .main-nav > ul,.has-inline-mobile-toggle #site-navigation .inside-navigation > *:not(.navigation-search):not(.main-nav){display:none;}.nav-align-right .inside-navigation,.nav-align-center .inside-navigation{justify-content:space-between;}}
+</style>
+<link rel="stylesheet" id="generate-font-icons-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/font-icons.min.css" media="all">
+<link rel="stylesheet" id="generate-child-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/style_002.css" media="all">
+<style id="generateblocks-inline-css">
+.gb-container .wp-block-image img{vertical-align:middle;}.gb-grid-wrapper .wp-block-image{margin-bottom:0;}.gb-highlight{background:none;}
+</style>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/jquery.min.js" id="jquery-core-js"></script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/jquery-migrate.min.js" id="jquery-migrate-js"></script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/popper.min.js" id="wpdm-poper-js"></script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/bootstrap.min.js" id="wpdm-frontend-js-js"></script>
+<script id="wpdm-frontjs-js-extra">
+var wpdm_url = {"home":"https:\/\/www.martyncurrey.com\/","site":"https:\/\/www.martyncurrey.com\/","ajax":"https:\/\/www.martyncurrey.com\/wp-admin\/admin-ajax.php"};
+var wpdm_js = {"spinner":"<i class=\"fas fa-sun fa-spin\"><\/i>","client_id":"f3adbc3b305372d368553ed136c4d6c1"};
+var wpdm_strings = {"pass_var":"Password Verified!","pass_var_q":"Please click following button to start download.","start_dl":"Start Download"};
+</script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/front.js" id="wpdm-frontjs-js"></script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/purify.min.js" id="purify-js"></script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/jquery.fancybox.js" id="fancybox-for-wp-js"></script>
+<link rel="https://api.w.org/" href="https://www.martyncurrey.com/wp-json/"><link rel="alternate" type="application/json" href="https://www.martyncurrey.com/wp-json/wp/v2/posts/34"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.martyncurrey.com/xmlrpc.php?rsd">
+<meta name="generator" content="WordPress 6.5.5">
+<link rel="canonical" href="https://www.martyncurrey.com/activating-the-shutter-release/">
+<link rel="shortlink" href="https://www.martyncurrey.com/?p=34">
+<link rel="alternate" type="application/json+oembed" href="https://www.martyncurrey.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.martyncurrey.com%2Factivating-the-shutter-release%2F">
+<link rel="alternate" type="text/xml+oembed" href="https://www.martyncurrey.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.martyncurrey.com%2Factivating-the-shutter-release%2F&amp;format=xml">
+
+<!-- Fancybox for WordPress v3.3.5 -->
+<style type="text/css">
+	.fancybox-slide--image .fancybox-content{background-color: #FFFFFF}div.fancybox-caption{display:none !important;}
+	
+	img.fancybox-image{border-width:10px;border-color:#FFFFFF;border-style:solid;}
+	div.fancybox-bg{background-color:rgba(102,102,102,0.3);opacity:1 !important;}div.fancybox-content{border-color:#FFFFFF}
+	div#fancybox-title{background-color:#FFFFFF}
+	div.fancybox-content{background-color:#FFFFFF}
+	div#fancybox-title-inside{color:#333333}
+	
+	
+	
+	div.fancybox-caption p.caption-title{display:inline-block}
+	div.fancybox-caption p.caption-title{font-size:14px}
+	div.fancybox-caption p.caption-title{color:#333333}
+	div.fancybox-caption {color:#333333}div.fancybox-caption p.caption-title {background:#fff; width:auto;padding:10px 30px;}div.fancybox-content p.caption-title{color:#333333;margin: 0;padding: 5px 0;}body.fancybox-active .fancybox-container .fancybox-stage .fancybox-content .fancybox-close-small{display:block;}
+</style><script type="text/javascript">
+	jQuery(function () {
+
+		var mobileOnly = false;
+		
+		if (mobileOnly) {
+			return;
+		}
+
+		jQuery.fn.getTitle = function () { // Copy the title of every IMG tag and add it to its parent A so that fancybox can show titles
+			var arr = jQuery("a[data-fancybox]");
+									jQuery.each(arr, function() {
+										var title = jQuery(this).children("img").attr("title");
+										var caption = jQuery(this).next("figcaption").html();
+                                        if(caption && title){jQuery(this).attr("title",title+" " + caption)}else if(title){ jQuery(this).attr("title",title);}else if(caption){jQuery(this).attr("title",caption);}
+									});			}
+
+		// Supported file extensions
+
+				var thumbnails = jQuery("a:has(img)").not(".nolightbox").not('.envira-gallery-link').not('.ngg-simplelightbox').filter(function () {
+			return /\.(jpe?g|png|gif|mp4|webp|bmp|pdf)(\?[^/]*)*$/i.test(jQuery(this).attr('href'))
+		});
+		
+
+		// Add data-type iframe for links that are not images or videos.
+		var iframeLinks = jQuery('.fancyboxforwp').filter(function () {
+			return !/\.(jpe?g|png|gif|mp4|webp|bmp|pdf)(\?[^/]*)*$/i.test(jQuery(this).attr('href'))
+		}).filter(function () {
+			return !/vimeo|youtube/i.test(jQuery(this).attr('href'))
+		});
+		iframeLinks.attr({"data-type": "iframe"}).getTitle();
+
+				// No Galleries
+		thumbnails.each(function () {
+			var rel = jQuery(this).attr("rel");
+			var imgTitle = jQuery(this).children("img").attr("title");
+			jQuery(this).addClass("fancyboxforwp").attr("data-fancybox", rel);
+			jQuery(this).attr("title", imgTitle);
+		});
+
+		iframeLinks.each(function () {
+			var rel = jQuery(this).attr("rel");
+			var imgTitle = jQuery(this).children("img").attr("title");
+			jQuery(this).attr({"data-fancybox": rel});
+			jQuery(this).attr("title", imgTitle);
+		});
+
+		// Else, gallery type is custom, so just print the custom expression
+		
+		// Call fancybox and apply it on any link with a rel atribute that starts with "fancybox", with the options set on the admin panel
+		jQuery("a.fancyboxforwp").fancyboxforwp({
+			loop: true,
+			smallBtn: true,
+			zoomOpacity: "auto",
+			animationEffect: "fade",
+			animationDuration: 500,
+			transitionEffect: "fade",
+			transitionDuration: "300",
+			overlayShow: true,
+			overlayOpacity: "0.3",
+			titleShow: true,
+			titlePosition: "inside",
+			keyboard: true,
+			showCloseButton: true,
+			arrows: true,
+			clickContent:false,
+			clickSlide: "close",
+			mobile: {
+				clickContent: function (current, event) {
+					return current.type === "image" ? "toggleControls" : false;
+				},
+				clickSlide: function (current, event) {
+					return current.type === "image" ? "close" : "close";
+				},
+			},
+			wheel: false,
+			toolbar: true,
+			preventCaptionOverlap: true,
+			onInit: function() { },			onDeactivate
+	: function() { },		beforeClose: function() { },			afterShow: function(instance) { jQuery( ".fancybox-image" ).on("click", function( ){ ( instance.isScaledDown() ) ? instance.scaleToActual() : instance.scaleToFit() }) },				afterClose: function() { },					caption : function( instance, item ) {var title ="";if("undefined" != typeof jQuery(this).context ){var title = jQuery(this).context.title;} else { var title = ("undefined" != typeof jQuery(this).attr("title")) ? jQuery(this).attr("title") : false;}var caption = jQuery(this).data('caption') || '';if ( item.type === 'image' && title.length ) {caption = (caption.length ? caption + '<br />' : '') + '<p class="caption-title">'+title+'</p>' ;}return caption;},
+		afterLoad : function( instance, current ) {current.$content.append('<div class=\"fancybox-custom-caption inside-caption\" style=\" position: absolute;left:0;right:0;color:#000;margin:0 auto;bottom:0;text-align:center;background-color:#FFFFFF \">' + current.opts.caption + '</div>');},
+			})
+		;
+
+			})
+</script>
+<!-- END Fancybox for WordPress -->
+<link rel="pingback" href="https://www.martyncurrey.com/xmlrpc.php">
+<link rel="icon" href="https://www.martyncurrey.com/wp-content/uploads/2021/07/favicon.ico" sizes="32x32">
+<link rel="icon" href="https://www.martyncurrey.com/wp-content/uploads/2021/07/favicon.ico" sizes="192x192">
+<link rel="apple-touch-icon" href="https://www.martyncurrey.com/wp-content/uploads/2021/07/favicon.ico">
+<meta name="msapplication-TileImage" content="https://www.martyncurrey.com/wp-content/uploads/2021/07/favicon.ico">
+		<style id="wp-custom-css">
+			.marg-bot_05em {margin-bottom: 0.5em}		</style>
+		<meta name="generator" content="WordPress Download Manager 3.3.03">
+                <style>
+        /* WPDM Link Template Styles */        </style>
+                <style>
+
+            :root {
+                --color-primary: #4a8eff;
+                --color-primary-rgb: 74, 142, 255;
+                --color-primary-hover: #5998ff;
+                --color-primary-active: #3281ff;
+                --color-secondary: #6c757d;
+                --color-secondary-rgb: 108, 117, 125;
+                --color-secondary-hover: #6c757d;
+                --color-secondary-active: #6c757d;
+                --color-success: #018e11;
+                --color-success-rgb: 1, 142, 17;
+                --color-success-hover: #0aad01;
+                --color-success-active: #0c8c01;
+                --color-info: #2CA8FF;
+                --color-info-rgb: 44, 168, 255;
+                --color-info-hover: #2CA8FF;
+                --color-info-active: #2CA8FF;
+                --color-warning: #FFB236;
+                --color-warning-rgb: 255, 178, 54;
+                --color-warning-hover: #FFB236;
+                --color-warning-active: #FFB236;
+                --color-danger: #ff5062;
+                --color-danger-rgb: 255, 80, 98;
+                --color-danger-hover: #ff5062;
+                --color-danger-active: #ff5062;
+                --color-green: #30b570;
+                --color-blue: #0073ff;
+                --color-purple: #8557D3;
+                --color-red: #ff5062;
+                --color-muted: rgba(69, 89, 122, 0.6);
+                --wpdm-font: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            }
+
+            .wpdm-download-link.btn.btn-primary {
+                border-radius: 4px;
+            }
+
+
+        </style>
+        </head>
+
+<body data-rsssl="1" class="post-template-default single single-post postid-34 single-format-standard wp-embed-responsive right-sidebar nav-below-header separate-containers header-aligned-left dropdown-hover" itemtype="https://schema.org/Blog" itemscope="">
+	<a class="screen-reader-text skip-link" href="#content" title="Skip to content">Skip to content</a>		<header class="site-header" id="masthead" aria-label="Site" itemtype="https://schema.org/WPHeader" itemscope="">
+			<div class="inside-header grid-container">
+				<div class="site-branding">
+						<p class="main-title" itemprop="headline">
+					<a href="https://www.martyncurrey.com/" rel="home">Martyn Currey</a>
+				</p>
+						<p class="site-description" itemprop="description">Arduino, ESP32/8266, Bluetooth, and stuff</p>
+					</div>			</div>
+		</header>
+				<nav class="main-navigation sub-menu-right" id="site-navigation" aria-label="Primary" itemtype="https://schema.org/SiteNavigationElement" itemscope="">
+			<div class="inside-navigation grid-container">
+								<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
+					<span class="mobile-menu">Menu</span>				</button>
+				<div id="primary-menu" class="main-nav"><ul id="menu-menu-1" class=" menu sf-menu"><li id="menu-item-4026" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-4026"><a href="https://www.martyncurrey.com/">Home</a></li>
+<li id="menu-item-4027" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4027"><a href="https://www.martyncurrey.com/arduino-bluetooth-control/">Arduino Bluetooth Control</a></li>
+<li id="menu-item-4028" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-4028"><a href="https://www.martyncurrey.com/bluetooth-control-panel/">Bluetooth Control Panel</a></li>
+</ul></div>			</div>
+		</nav>
+		
+	<div class="site grid-container container hfeed" id="page">
+				<div class="site-content" id="content">
+			
+	<div class="content-area" id="primary">
+		<main class="site-main" id="main">
+			
+<article id="post-34" class="post-34 post type-post status-publish format-standard hentry category-arduino category-water-drops" itemtype="https://schema.org/CreativeWork" itemscope="">
+	<div class="inside-article">
+					<header class="entry-header">
+				<h1 class="entry-title" itemprop="headline">Using an Arduino and a optocoupler to activate a camera shutter</h1>		<div class="entry-meta">
+			<span class="posted-on"><time class="updated" datetime="2018-08-29T03:15:06+00:00" itemprop="dateModified">August 29, 2018</time><time class="entry-date published" datetime="2013-07-06T06:59:24+00:00" itemprop="datePublished">July 6, 2013</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope=""><a class="url fn n" href="https://www.martyncurrey.com/author/admin/" title="View all posts by Martyn" rel="author" itemprop="url"><span class="author-name" itemprop="name">Martyn</span></a></span></span> 		</div>
+					</header>
+			
+		<div class="entry-content" itemprop="text">
+			<p>There are several ways you can connect an Arduino to a DSLR so 
+that you can use the Arduino to activate the shutter. I chose to use an 
+optocoupler, sometimes called an optoisolator.</p>
+<h2>Optocoupler</h2>
+<p>There are many types of optocoupler and you chose one based on the 
+requirements of your circuit. My circuit is a 5V Arduino and a Canon 40D
+ which has about 3.2V on the shutter release. Due to the relatively low 
+voltages there are many suitable optocouplers to pick from. I already 
+had a Fairchild 4N26 so this is the one I used.</p>
+<h2>4N26</h2>
+<p><img fetchpriority="high" decoding="async" class="alignleft size-full wp-image-311" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/4N26.jpg" alt="4N26" width="800" height="460" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/4N26.jpg 800w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/4N26-584x336.jpg 584w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/4N26-500x288.jpg 500w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/4N26-300x173.jpg 300w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/4N26-120x69.jpg 120w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/4N26-522x300.jpg 522w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/4N26-696x400.jpg 696w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/4N26-250x144.jpg 250w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/4N26-200x115.jpg 200w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/4N26-240x138.jpg 240w" sizes="(max-width: 800px) 100vw, 800px"></p>
+<p>Optocouplers are digital switches.&nbsp; They work by using an LED 
+emitter paired with a photo detector transistor. This means they can be 
+used to allow one circuit to switch a separate circuit without having 
+any electrical contact between the two. Basically, if you put a current 
+through pins 1 and 2 and light the LED the photo detector transistor 
+detects the light from the LED and allows a current to flow through pins
+ 5 and 4. No current on pins 1 and 2 means current does not pass through
+ pins 5 and 4.</p>
+<p><span id="more-34"></span></p>
+<p>Pins 1 and 2 go to the Arduino, pins 5 and 4 go to the cable release.
+ Note that the +5 volts (VCC) from an Arduino digital pin goes to pin 1 
+and Arduino ground goes to pin 2. You need to add a suitable resistor to
+ the input, see below. The shutter wire from the shutter release cable 
+goes to pin 5 and ground from the shutter release goes to pin 4. It will
+ not work if you get them the wrong way-a-round.</p>
+<p>The main things you need to know when choosing an optocoupler are:<br>
+1. The current transfer ratio<br>
+2. The switching time (bandwidth)<br>
+3. The collector / emitter voltage limit<br>
+4. The input current (I<sub>F</sub>).</p>
+<p><strong>Current transfer ratio (CTR).</strong><br>
+The CTR is the ratio of the phototransistor collector current compared 
+to the LED emiiter forward current. It is similar to the  DC current 
+amplification ratio of a transistor and is expressed as a percentage.</p>
+<p>Most optocouplers have a CTR of between 10% and 50%. The Fairchild 
+4N26 has a CTR of about 20%. The value of the CTR changes depending on 
+the input current and the ambient temperature. As a general guide, 
+optocouplers are most efficient at about 10mA. CTR=(I<sub>C</sub>/I<sub>F</sub>)*100.
+ Bear in mind this is a general guide only and you should check the data
+ sheet for exact information. According to the below diagram, taken from
+ the data sheet, the Fairchild 4N25 is most efficient at about 6mA (top 
+of the curve).</p>
+<p>The CTR depends on the LED input current (I<sub>F</sub>) and the CTR 
+decreases from a maximum point when the input current is both increased 
+and decreased. If you look at the below diagram, the top of the curve is
+ around the 6mA point. This is where the chip is most efficient. You 
+will notice that the curve is far steeper on the small current side (I<sub>F</sub> 0mA to 6mA) compared to the high current side (I<sub>F</sub>
+ 6mA to 20mA) and it is therefore, better to have slightly more current 
+on the input side rather than slightly too little. 1mA too little has a 
+far bigger effect than 1mA too much.</p>
+<p><img decoding="async" class="alignnone size-full wp-image-312" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/CTR.jpg" alt="CTR v Forward Current 4N26" width="461" height="424" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/CTR.jpg 480w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/CTR-327x300.jpg 327w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/CTR-300x276.jpg 300w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/CTR-120x110.jpg 120w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/CTR-435x400.jpg 435w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/CTR-250x230.jpg 250w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/CTR-200x184.jpg 200w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/CTR-240x221.jpg 240w" sizes="(max-width: 461px) 100vw, 461px"></p>
+<p>The CTR depends upon the current gain (hfe) of the transistor, the 
+supply voltage to the phototransistor, the forward current through the 
+LED and the operating temperature. CTR=(I<sub>C</sub>/I<sub>F</sub>)*100</p>
+<p><strong>The switching time</strong><br>
+The is the time it takes for the optocoupler to switch on or off. The 
+4N26 has a turn on time of 2μs (2 microseconds or 2 millionths of a 
+second) and a turn off time of 2μs. This is more than sufficient for my 
+needs.</p>
+<p><strong>The collector / emitter voltage limit</strong><br>
+This is the maximum voltage the optocoupler can handle on the output 
+side. For the 4N26 it is 30V. Since I want to use it on a Canon 40D 
+which has about 3.2V on the shutter release cable it is more than 
+enough.</p>
+<p><strong>The input current</strong><br>
+This is used to calculate the resistor value on the input side. This is typically about 10mA.</p>
+<p>You could add a diode to the input side to protect the device from 
+reverse voltage but since the voltages I am using are below the chips 
+reverse voltage threshold a diode is not required. The 4N26 has a 
+maximum reverse voltage of 6V (taken from the data sheet) and since I am
+ driving it from a 5V Arduino I will not damage the chip if I get the 
+wires the wrong way around. </p>
+<p>The 4N26 I have has a forward voltage of 1.2V (based on 10mA). So, 
+using&nbsp;r = v / i&nbsp; we need a&nbsp; 5v – 1.2v = 3.8v / 0.010 
+=&nbsp; 380 ohms resistor on the input side. 380 is the minimum and 
+higher values will also work (you can use higher not lower). The nearest
+ I had was 470ohm.</p>
+<p>Depending on your circuit you may need to add a resistor on the other side of the optocoupler as well.</p>
+<p>&nbsp;</p>
+<p><strong>&nbsp;Test circuit</strong></p>
+<p>To get started and to make sure I had everything working before 
+attaching the camera I created a test circuit. This is simply the 
+optocoupler with an Arduino connected on one side and a LED and battery 
+on the other. The optocoupler is connected to pin 12 on the Ardunio. The
+ 2 circuits are completely separate. There is no electrical contact 
+between the Arduino side and the battery/LED side. I am pretty sure 
+though, if you fed enough current through one side and exceeded the 
+limits of the chip you could cause a short.</p>
+<p><a href="https://www.martyncurrey.com/wp-content/uploads/2013/07/opto_01_1200.jpg"><img decoding="async" class="alignleft size-large wp-image-337" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/opto_01_1200-1024x858.jpg" alt="4N26 optocoupler test circuit" width="584" height="489"></a>When using LEDs you should always add a resistor, here I have included a 100 ohm resistor.</p>
+<p>LEDs will keep pulling current until something breaks. Therefore, you
+ should always include a resistor to limit the amount of current the LED
+ can draw.</p>
+<p>To test the circuit I modified the Blink sketch by adding the 
+optocoupler to pin 12 and made it HIGH / LOW at the same time as the LED
+ pin.</p>
+<pre>/*
+Blink
+Turns on an LED on for one second, then off for one second, repeatedly.
+
+This example code is in the public domain.
+*/
+
+// Pin 13 has an LED connected on most Arduino boards.
+// give it a name:
+int led = 13;
+int opto = 12;
+
+// the setup routine runs once when you press reset:
+void setup()
+{
+// initialize the digital pin as an output.
+pinMode(led, OUTPUT);
+pinMode(opto, OUTPUT);
+}
+
+// the loop routine runs over and over again forever:
+void loop()
+{
+digitalWrite(led, HIGH);&nbsp;&nbsp; // turn the LED on (HIGH is the voltage level)
+digitalWrite(opto, HIGH);
+delay(1000);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // wait for a second
+digitalWrite(led, LOW);&nbsp;&nbsp;&nbsp; // turn the LED off by making the voltage LOW
+digitalWrite(opto, LOW);
+delay(1000);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // wait for a second
+}</pre>
+<p>This worked fine, the green LED flashed in sync with the LED on the 
+Arduinos pin 13. The the next stage was to attach the camera.</p>
+<p>&nbsp;</p>
+<h2>Shutter Release Cable</h2>
+<p>As mentioned, I have a Canon 40D which uses a proprietary N3 
+connector. I already had a Canon RS-80N3 shutter release cable but since
+ it was expensive I did not want to destroy it. Instead I bought a cheap
+ compatible release cable for about $5.</p>
+<p><img loading="eager" decoding="async" class="wp-image-45 alignnone" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/N3Pins.jpg" alt="Pin outs on a N3 connector" width="253" height="169" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/N3Pins.jpg 487w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/N3Pins-450x300.jpg 450w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/N3Pins-300x200.jpg 300w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/N3Pins-120x80.jpg 120w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/N3Pins-250x167.jpg 250w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/N3Pins-200x133.jpg 200w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/N3Pins-240x160.jpg 240w" sizes="(max-width: 253px) 100vw, 253px"></p>
+<p><img loading="eager" decoding="async" class="alignleft size-full wp-image-40" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/ShutterRelease.jpg" alt="Shutter Release" width="800" height="201" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/ShutterRelease.jpg 800w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/ShutterRelease-584x147.jpg 584w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/ShutterRelease-500x126.jpg 500w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/ShutterRelease-300x75.jpg 300w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/ShutterRelease-120x30.jpg 120w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/ShutterRelease-250x63.jpg 250w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/ShutterRelease-200x50.jpg 200w, Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/ShutterRelease-240x60.jpg 240w" sizes="(max-width: 800px) 100vw, 800px"></p>
+<p><!--more--><br>
+I was going to cut off the end of the cable but when I opened it I had a
+ pleasant surprise. The cable had a 0.1 inch header attached to it. This
+ meant I could easily connect it to a breadboard. For this particular 
+cable; white is ground, red is +3V shutter release and blue is +3v 
+focus. Other makes will have different colours.</p>
+<p>The shutter release is basically a couple of contact switches. 
+Connect the focus pin to ground and the camera focuses. Connect the 
+shutter pin to ground and a shot is taken. This means to wire up the 
+shutter release all you need to is introduce some kind of switch. You 
+can do this by directly connecting the shutter release cable to the 
+Arduino. The camera puts about 3.2 volts through the shutter release 
+which the Arduino can handle. However, connecting the two devices 
+directly is not a good idea. Should something go wrong you could damage 
+the camera. This is where the optocoupler comes in.</p>
+<h2></h2>
+<p><strong>Connecting the camera to the Arduino.</strong></p>
+<p><a href="https://www.martyncurrey.com/wp-content/uploads/2013/07/shutterCable_01.jpg"><img loading="eager" decoding="async" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/shutterCable_01-1024x679.jpg" alt="Arduino shutter release" width="584" height="387"></a></p>
+<p>All I have done is replaced the LED and battery with the shutter release cable.</p>
+<p>&nbsp;</p>
+<p>Using the same sketch as above, I connected the camera and turned on 
+the Arduino. The sketch activated the shutter every 2 seconds as 
+expected.</p>
+<p>[evp_embed_video url=”https://www.martyncurrey.com/wp-content/uploads/2013/11/ArduinoShutterRelease.mp4″]</p>
+<p>&nbsp;</p>
+<h3>Next Steps</h3>
+<p>Although triggering the shutter on its own works for the Canon 
+cameras it may not work on all brands. Ideally you also need to trigger 
+focus and some things (like bulb mode) will only work when both focus 
+and shutter are triggered together.</p>
+<p>&nbsp;<br>
+&nbsp;<br>
+&nbsp;</p>
+		</div>
+
+				<footer class="entry-meta" aria-label="Entry meta">
+			<span class="cat-links"><span class="screen-reader-text">Categories </span><a href="https://www.martyncurrey.com/category/arduino/" rel="category tag">Arduino</a>, <a href="https://www.martyncurrey.com/category/water-drops/" rel="category tag">Water Drops</a></span> 		<nav id="nav-below" class="post-navigation" aria-label="Posts">
+			<div class="nav-previous"><span class="prev"><a href="https://www.martyncurrey.com/hello-world/" rel="prev">Photographing Water Drops</a></span></div><div class="nav-next"><span class="next"><a href="https://www.martyncurrey.com/soleniod-valves/" rel="next">Soleniod Valves</a></span></div>		</nav>
+				</footer>
+			</div>
+</article>
+
+			<div class="comments-area">
+				<div id="comments">
+
+	<h2 class="comments-title">18 thoughts on “Using an Arduino and a optocoupler to activate a camera shutter”</h2>
+		<ol class="comment-list">
+			
+		<li id="comment-14" class="comment even thread-even depth-1">
+			<article class="comment-body" id="div-comment-14" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/54a5f48e07c41a0209f8c371d5821ad7.jpg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/54a5f48e07c41a0209f8c371d5821ad7_002.jpg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn">Adam</cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-14">									<time datetime="2013-08-13T01:22:20+00:00" itemprop="datePublished">
+										August 13, 2013 at 1:22 am									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>Great tutorial, works a treat as a basic shutter release. I will
+ be using the arduino to control the camera shooting interval and will 
+also be using a motorized dolly for the movement of the camera. This 
+tutorial allows anyone to be able to use their arduino to control their 
+camera. Thanks heaps! Adam.</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=14#respond" data-commentid="14" data-postid="34" data-belowelement="div-comment-14" data-respondelement="respond" data-replyto="Reply to Adam" aria-label="Reply to Adam">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+
+		<li id="comment-1914" class="comment odd alt thread-odd thread-alt depth-1">
+			<article class="comment-body" id="div-comment-1914" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/b356146dfc8a589171f7323e1b73639f.jpg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/b356146dfc8a589171f7323e1b73639f_002.jpg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn">Ard</cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-1914">									<time datetime="2014-03-07T02:53:07+00:00" itemprop="datePublished">
+										March 7, 2014 at 2:53 am									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>Thank you for posting this.<br>
+I followed it and it worked first time.</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=1914#respond" data-commentid="1914" data-postid="34" data-belowelement="div-comment-1914" data-respondelement="respond" data-replyto="Reply to Ard" aria-label="Reply to Ard">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+
+		<li id="comment-2004" class="comment even thread-even depth-1">
+			<article class="comment-body" id="div-comment-2004" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/8981336936a272ddb96da0c5d7d63245.jpg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/8981336936a272ddb96da0c5d7d63245_002.jpg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn">Ard</cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-2004">									<time datetime="2014-06-21T18:09:24+00:00" itemprop="datePublished">
+										June 21, 2014 at 6:09 pm									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>Hi there! This post helped me a lot. Thanks.</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=2004#respond" data-commentid="2004" data-postid="34" data-belowelement="div-comment-2004" data-respondelement="respond" data-replyto="Reply to Ard" aria-label="Reply to Ard">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+
+		<li id="comment-2091" class="comment odd alt thread-odd thread-alt depth-1">
+			<article class="comment-body" id="div-comment-2091" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/165cbfcd13fc4c45253b3757c505abc6.jpg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/165cbfcd13fc4c45253b3757c505abc6_002.jpg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn">Lars</cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-2091">									<time datetime="2014-07-08T08:44:03+00:00" itemprop="datePublished">
+										July 8, 2014 at 8:44 am									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>Thanks for the write-up, and the clear explanation of optocouplers!</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=2091#respond" data-commentid="2091" data-postid="34" data-belowelement="div-comment-2091" data-respondelement="respond" data-replyto="Reply to Lars" aria-label="Reply to Lars">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+
+		<li id="comment-2358" class="comment even thread-even depth-1">
+			<article class="comment-body" id="div-comment-2358" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/c6f400acc07dbc68b638711e06b8eb51.jpg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/c6f400acc07dbc68b638711e06b8eb51_002.jpg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn">Malcolm</cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-2358">									<time datetime="2014-08-09T10:43:35+00:00" itemprop="datePublished">
+										August 9, 2014 at 10:43 am									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>Best beginner’s tutorial on using optocouplers I’ve come across.  Thank you!</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=2358#respond" data-commentid="2358" data-postid="34" data-belowelement="div-comment-2358" data-respondelement="respond" data-replyto="Reply to Malcolm" aria-label="Reply to Malcolm">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+
+		<li id="comment-3356" class="comment odd alt thread-odd thread-alt depth-1">
+			<article class="comment-body" id="div-comment-3356" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/303f63e8977724230947f35396fe9e6e.jpg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/303f63e8977724230947f35396fe9e6e_002.jpg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn">SmokeT</cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-3356">									<time datetime="2014-12-05T11:31:45+00:00" itemprop="datePublished">
+										December 5, 2014 at 11:31 am									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>Thank you very much for this beginner tutorial.</p>
+<p>You’re answering every single question I can imagine!!</p>
+<p>Had already a solution with transistors and it worked well. But I 
+have done a mistake with my circuit and now the mainboard of my canon 
+550d is damaged. Cant be repaired and a new one cost around 300 Euro…. 
+so for everyone reading this, dont use transistors if you dont know much
+ about electronics! This tutorial is a far better solution with more 
+security!!</p>
+<p>Regards from germany</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=3356#respond" data-commentid="3356" data-postid="34" data-belowelement="div-comment-3356" data-respondelement="respond" data-replyto="Reply to SmokeT" aria-label="Reply to SmokeT">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+
+		<li id="comment-5514" class="comment even thread-even depth-1 parent">
+			<article class="comment-body" id="div-comment-5514" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/1deb4ae9c3ea7aa044931ef9cd58d7e5.png" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/1deb4ae9c3ea7aa044931ef9cd58d7e5_002.png 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn"><a href="http://www.javiroces.com/" class="url" rel="ugc external nofollow">javi</a></cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-5514">									<time datetime="2016-05-22T14:23:14+00:00" itemprop="datePublished">
+										May 22, 2016 at 2:23 pm									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>Hi! It’s a very interesting tutorial. After seeing dozens of 
+similar tutorials to get something done, i select just a few, and yours 
+is one of them. It’s an elemental tutorial about using optocoupler, 
+thanks!!</p>
+<p>I’d like to use this in another project, and i’d like to say it here in order to get some help or ideas :)</p>
+<p>The main idea is: PIR sensor -&gt; arduino -&gt; optocoupler -&gt; camera</p>
+<p>I can use PIR as a sensor; i can read sensor data; i can use opto as 
+switch, but: could i use any simple bad digital camera? I have 
+dissassembled a few of them, diferent kinds, and in a simple example: 
+must power on the camera, and press shutter. Could i do this with optos?</p>
+<p>Next step is building a simple IR light emiter, so camera (IR hacked) can see at night.</p>
+<p>Sorry about my english, and excuse me if my message looks confusing. 
+Feel free to email me if you can /want to help me or comment something 
+:)</p>
+<p>Thanks!!</p>
+<p>JAvi</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=5514#respond" data-commentid="5514" data-postid="34" data-belowelement="div-comment-5514" data-respondelement="respond" data-replyto="Reply to javi" aria-label="Reply to javi">Reply</a></span>				</div>
+			</article>
+			<ul class="children">
+
+		<li id="comment-5533" class="comment byuser comment-author-admin bypostauthor odd alt depth-2">
+			<article class="comment-body" id="div-comment-5533" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/2030c0326204231434ecea74cb826581.jpg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/2030c0326204231434ecea74cb826581_002.jpg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn"><a href="https://www.martyncurrey.com/" class="url" rel="ugc">Martyn</a></cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-5533">									<time datetime="2016-05-25T02:59:41+00:00" itemprop="datePublished">
+										May 25, 2016 at 2:59 am									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>This is certainly possible but beyond the scope of this tutorial.</p>
+<p>The only time I used a camera that did not have a shutter release 
+connection I soldered wires directly to the shutter button switch. This 
+kind of worked but I had other issues like when the camera went in to 
+sleep mode.</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=5533#respond" data-commentid="5533" data-postid="34" data-belowelement="div-comment-5533" data-respondelement="respond" data-replyto="Reply to Martyn" aria-label="Reply to Martyn">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+
+		<li id="comment-5615" class="comment even thread-odd thread-alt depth-1 parent">
+			<article class="comment-body" id="div-comment-5615" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/48e12353dc7e069a1f34d4aa96d925f8.jpg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/48e12353dc7e069a1f34d4aa96d925f8_002.jpg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn">Chris</cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-5615">									<time datetime="2016-06-07T08:33:50+00:00" itemprop="datePublished">
+										June 7, 2016 at 8:33 am									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>This is useful.  Thanks.  I came across another interesting tutorial online which I am struggling to understand.  <a href="https://www.youtube.com/watch?v=b6ZagKRnRdM" rel="nofollow ugc">https://www.youtube.com/watch?v=b6ZagKRnRdM</a></p>
+<p>It uses an optocoupler to trigger a relay.  The first version of the 
+circuit makes sense to me, but the second one is more interesting since 
+it removes the transistor.  That said, what throws me off (at the end of
+ the video; it the last circuit @ 8:32) is that current flows from VCC 
+into the GPIO but if the GPIO outputs 3.3VDC, there seems to be a 
+problem.  I’m used to circuits going from VCC into GND so something like
+ that diagram confuses me.</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=5615#respond" data-commentid="5615" data-postid="34" data-belowelement="div-comment-5615" data-respondelement="respond" data-replyto="Reply to Chris" aria-label="Reply to Chris">Reply</a></span>				</div>
+			</article>
+			<ul class="children">
+
+		<li id="comment-5616" class="comment byuser comment-author-admin bypostauthor odd alt depth-2">
+			<article class="comment-body" id="div-comment-5616" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/2030c0326204231434ecea74cb826581.jpg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/2030c0326204231434ecea74cb826581_002.jpg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn"><a href="https://www.martyncurrey.com/" class="url" rel="ugc">Martyn</a></cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-5616">									<time datetime="2016-06-07T14:48:03+00:00" itemprop="datePublished">
+										June 7, 2016 at 2:48 pm									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>Most hobbyists (myself included) would have the connections the 
+other way around and use the GPIO pin to supply VCC to the optocoupler 
+and this is how I have the connections in the example above.</p>
+<p>The circuit in the video is using the GPIO pin to sink the current 
+rather than supply it. That means when the GPIO pin goes low, current 
+flows from VCC to the pin and the circuit turns on. Bringing the pin 
+high balances the current so there is no current flow and the circuit 
+turns off.</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=5616#respond" data-commentid="5616" data-postid="34" data-belowelement="div-comment-5616" data-respondelement="respond" data-replyto="Reply to Martyn" aria-label="Reply to Martyn">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+
+		<li id="comment-5673" class="comment even thread-even depth-1 parent">
+			<article class="comment-body" id="div-comment-5673" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/1a389e1c10f87319c10febf61440e8b2.jpeg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/1a389e1c10f87319c10febf61440e8b2_002.jpeg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn">PG</cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-5673">									<time datetime="2016-06-20T07:17:03+00:00" itemprop="datePublished">
+										June 20, 2016 at 7:17 am									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>Hi Martyn,</p>
+<p>Thanks for the tutorial. </p>
+<p>On another site it was suggested that one should trigger focus first and then shutter release, though I’m not sure why.</p>
+<p>I’m thinking of duplicating the circuit (i.e. two separate 
+optocouplers, two separate data outputs), one for focus and the other 
+for shutter. Any thoughts on that?</p>
+<p>Cheers</p>
+<p>PG</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=5673#respond" data-commentid="5673" data-postid="34" data-belowelement="div-comment-5673" data-respondelement="respond" data-replyto="Reply to PG" aria-label="Reply to PG">Reply</a></span>				</div>
+			</article>
+			<ul class="children">
+
+		<li id="comment-5675" class="comment byuser comment-author-admin bypostauthor odd alt depth-2">
+			<article class="comment-body" id="div-comment-5675" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/2030c0326204231434ecea74cb826581.jpg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/2030c0326204231434ecea74cb826581_002.jpg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn"><a href="https://www.martyncurrey.com/" class="url" rel="ugc">Martyn</a></cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-5675">									<time datetime="2016-06-20T13:58:44+00:00" itemprop="datePublished">
+										June 20, 2016 at 1:58 pm									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>Triggering focus and the shutter is the correct way to do it.</p>
+<p>The above was an early experiment which developed in to a camera trigger/ water drop device which you can see at <a href="http://www.dropcontroller.com/dropcontroller-2/" rel="nofollow ugc">http://www.dropcontroller.com/dropcontroller-2/</a>. Take a look at the camera triggers in the circuit diagram.</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=5675#respond" data-commentid="5675" data-postid="34" data-belowelement="div-comment-5675" data-respondelement="respond" data-replyto="Reply to Martyn" aria-label="Reply to Martyn">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+
+		<li id="comment-6136" class="comment even thread-odd thread-alt depth-1">
+			<article class="comment-body" id="div-comment-6136" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/d2ad8ddb30fce0bc3de8546ad31b7b62.png" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/d2ad8ddb30fce0bc3de8546ad31b7b62_002.png 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn"><a href="http://www.estudiosanti.com/" class="url" rel="ugc external nofollow">Luduing Rodriguez</a></cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-6136">									<time datetime="2016-09-30T02:30:17+00:00" itemprop="datePublished">
+										September 30, 2016 at 2:30 am									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>Excellent post/tutorial. This is exactly what I needed for my DIY motorized camera slider with shutter control from Arduino.</p>
+<p>Thank you very much for your very easy to understand explanation.</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=6136#respond" data-commentid="6136" data-postid="34" data-belowelement="div-comment-6136" data-respondelement="respond" data-replyto="Reply to Luduing Rodriguez" aria-label="Reply to Luduing Rodriguez">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+
+		<li id="comment-9979" class="comment odd alt thread-even depth-1">
+			<article class="comment-body" id="div-comment-9979" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/608c8f2b041d42b4137ca1404f87f0f3.png" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/608c8f2b041d42b4137ca1404f87f0f3_002.png 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn">Troy</cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-9979">									<time datetime="2017-12-03T00:03:13+00:00" itemprop="datePublished">
+										December 3, 2017 at 12:03 am									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>Thanks heaps for your help!  I needed to use my Photon to reboot
+ a frozen PC at a rather remote location, so using this example and 
+doubling it, I am now able to use the Reset button on one 4n28, and the 
+Power button with the other 4n28.  Works a treat, but in the PC 
+mainboard pins, you have to make sure it’s around the correct way for 
+the trigger to work.  Trial and error fixes that :)</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=9979#respond" data-commentid="9979" data-postid="34" data-belowelement="div-comment-9979" data-respondelement="respond" data-replyto="Reply to Troy" aria-label="Reply to Troy">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+
+		<li id="comment-10423" class="comment even thread-odd thread-alt depth-1">
+			<article class="comment-body" id="div-comment-10423" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/1b6e8996963a9fc8b2f413b686d99fb6.jpg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/1b6e8996963a9fc8b2f413b686d99fb6_002.jpg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn">Mikko</cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-10423">									<time datetime="2018-01-23T20:03:32+00:00" itemprop="datePublished">
+										January 23, 2018 at 8:03 pm									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>I am new with electronics, so here is a basic question.</p>
+<p>Why would one use optocoupler for this and not a reed relay? Isn’t the latter even simpler?</p>
+<p>In the case of N3 it seems the remote controls just directly connect 
+the focus and/or shutter release to ground when button is pushed.</p>
+<p>It is my understanding that if I use a small enough reed relay, I would not need any resistors?</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=10423#respond" data-commentid="10423" data-postid="34" data-belowelement="div-comment-10423" data-respondelement="respond" data-replyto="Reply to Mikko" aria-label="Reply to Mikko">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+
+		<li id="comment-10921" class="pingback odd alt thread-even depth-1">
+			<div class="comment-body">
+				Pingback: <a href="http://hudsonwerks.com/2018/03/17/wired-camera-trigger-celebratephotography/" class="url" rel="ugc external nofollow">Wired Camera Trigger #celebratephotography - HudsonWerks</a> 			</div>
+
+		</li><!-- #comment-## -->
+
+		<li id="comment-12296" class="comment even thread-odd thread-alt depth-1">
+			<article class="comment-body" id="div-comment-12296" itemtype="https://schema.org/Comment" itemscope="">
+				<footer class="comment-meta" aria-label="Comment meta">
+					<img alt="" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/749ab9848902a5263796d7d2e3457296.jpg" srcset="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/749ab9848902a5263796d7d2e3457296_002.jpg 2x" class="avatar avatar-50 photo" height="50" width="50" loading="eager" decoding="async">					<div class="comment-author-info">
+						<div class="comment-author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope="">
+							<cite itemprop="name" class="fn"><a href="https://www.martyncurrey.com/activating-the-shutter-release/" class="url" rel="ugc">tu maima</a></cite>						</div>
+
+													<div class="entry-meta comment-metadata">
+								<a href="https://www.martyncurrey.com/activating-the-shutter-release/#comment-12296">									<time datetime="2018-05-20T00:05:16+00:00" itemprop="datePublished">
+										May 20, 2018 at 12:05 am									</time>
+								</a>							</div>
+												</div>
+
+									</footer>
+
+				<div class="comment-content" itemprop="text">
+					<p>una mierda porque no te suicidas,<br>
+saludos<br>
+tu jefa</p>
+<span class="reply"><a rel="nofollow" class="comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/?replytocom=12296#respond" data-commentid="12296" data-postid="34" data-belowelement="div-comment-12296" data-respondelement="respond" data-replyto="Reply to tu maima" aria-label="Reply to tu maima">Reply</a></span>				</div>
+			</article>
+			</li><!-- #comment-## -->
+
+		<li id="comment-24107" class="pingback odd alt thread-even depth-1">
+			<div class="comment-body">
+				Pingback: <a href="https://werbasteltmit.wordpress.com/2015/10/04/kamera-intervallausloeser-sehr-einfach/" class="url" rel="ugc external nofollow">Kamera Intervallauslöser, sehr einfach | wer bastelt mit?</a> 			</div>
+
+		</li><!-- #comment-## -->
+		</ol><!-- .comment-list -->
+
+			<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Comment <small><a rel="nofollow" id="cancel-comment-reply-link" href="https://www.martyncurrey.com/activating-the-shutter-release/#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://www.martyncurrey.com/wp-comments-post.php" method="post" id="commentform" class="comment-form" novalidate=""><p class="comment-form-comment"><label for="comment" class="screen-reader-text">Comment</label><textarea id="comment" name="comment" cols="45" rows="8" required=""></textarea></p><label for="author" class="screen-reader-text">Name</label><input placeholder="Name *" id="author" name="author" type="text" size="30" required="">
+<label for="email" class="screen-reader-text">Email</label><input placeholder="Email *" id="email" name="email" type="email" size="30" required="">
+<label for="url" class="screen-reader-text">Website</label><input placeholder="Website" id="url" name="url" type="url" size="30">
+<p class="comment-form-cookies-consent"><input id="wp-comment-cookies-consent" name="wp-comment-cookies-consent" type="checkbox" value="yes"> <label for="wp-comment-cookies-consent">Save my name, email, and website in this browser for the next time I comment.</label></p>
+<div class="gglcptch gglcptch_v2"><div id="gglcptch_recaptcha_1373725260" class="gglcptch_recaptcha"></div>
+				<span>
+					<div style="width: 302px;">
+						<div style="width: 302px; height: 422px; position: relative;">
+							<div style="width: 302px; height: 422px; position: absolute;">
+								<iframe src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/fallback.htm" frameborder="0" scrolling="no" style="width: 302px; height:422px; border-style: none;"></iframe>
+							</div>
+						</div>
+						<div style="border-style: none; bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px; background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px; height: 60px; width: 300px;">
+							<input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px !important; height: 40px !important; border: 1px solid #c1c1c1 !important; margin: 10px 25px !important; padding: 0px !important; resize: none !important;">
+						</div>
+					</div>
+				</span></div><p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment"> <input type="hidden" name="comment_post_ID" value="34" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+</p><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="4d634ae41e"></p><p style="display: none !important;" class="akismet-fields-container" data-prefix="ak_"><label>Δ<textarea name="ak_hp_textarea" cols="45" rows="8" maxlength="100"></textarea></label><input type="hidden" id="ak_js_1" name="ak_js" value="15"><script>document.getElementById( "ak_js_1" ).setAttribute( "value", ( new Date() ).getTime() );</script></p></form>	</div><!-- #respond -->
+	
+</div><!-- #comments -->
+			</div>
+
+					</main>
+	</div>
+
+	<div class="widget-area sidebar is-right-sidebar" id="right-sidebar">
+	<div class="inside-right-sidebar">
+		<aside id="search-2" class="widget inner-padding widget_search"><form method="get" class="search-form" action="https://www.martyncurrey.com/">
+	<label>
+		<span class="screen-reader-text">Search for:</span>
+		<input type="search" class="search-field" placeholder="Search …" name="s" title="Search for:">
+	</label>
+	<button class="search-submit" aria-label="Search"></button></form>
+</aside><aside id="block-2" class="widget inner-padding widget_block"><div id="dc-ad">
+<a href="https://www.dropcontroller.com/" target="_blank">
+<img decoding="async" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/dropController.jpg" alt="dropController. The most advanced water drop photography device available">
+<strong>dropController</strong><br>The ultimate water drop photography controller
+</a>
+</div></aside><aside id="categories-2" class="widget inner-padding widget_categories"><h2 class="widget-title">Categories</h2><form action="https://www.martyncurrey.com" method="get"><label class="screen-reader-text" for="cat">Categories</label><select name="cat" id="cat" class="postform">
+	<option value="-1" selected="selected">Select Category</option>
+	<option class="level-0" value="32">admin</option>
+	<option class="level-0" value="31">Android</option>
+	<option class="level-0" value="41">app inventor</option>
+	<option class="level-0" value="4">Arduino</option>
+	<option class="level-0" value="33">Arduino + Visual Basic</option>
+	<option class="level-0" value="19">ATmega</option>
+	<option class="level-0" value="50">BLE / Bluetooth 4</option>
+	<option class="level-0" value="29">Bluetooth</option>
+	<option class="level-0" value="39">Bread Board</option>
+	<option class="level-0" value="27">ESP8266</option>
+	<option class="level-0" value="69">H-06/HC-05</option>
+	<option class="level-0" value="54">HM-10</option>
+	<option class="level-0" value="66">IOT</option>
+	<option class="level-0" value="67">LCD</option>
+	<option class="level-0" value="53">NodeMCU v0.9</option>
+	<option class="level-0" value="57">RN4870</option>
+	<option class="level-0" value="59">serial</option>
+	<option class="level-0" value="60">Solenoid</option>
+	<option class="level-0" value="1">Uncategorized</option>
+	<option class="level-0" value="2">Water Drops</option>
+	<option class="level-0" value="61">websockets</option>
+</select>
+</form><script>
+(function() {
+	var dropdown = document.getElementById( "cat" );
+	function onCatChange() {
+		if ( dropdown.options[ dropdown.selectedIndex ].value > 0 ) {
+			dropdown.parentNode.submit();
+		}
+	}
+	dropdown.onchange = onCatChange;
+})();
+</script>
+</aside><aside id="block-4" class="widget inner-padding widget_block"><a href="https://www.martyncurrey.com/about/">
+About
+</a></aside><aside id="block-3" class="widget inner-padding widget_block"><a href="https://www.martyncurrey.com/privacy-policy/">
+Privacy Policy
+</a></aside><!--
+Plugin: Custom Meta Widget
+Plugin URL: http://shinraholdings.com/plugins/custom-meta-widget/
+-->
+<aside id="custommetawidget-2" class="widget inner-padding customMetaWidget"><h2 class="widget-title"> </h2>		<ul>
+
+		
+					<li><a href="https://www.martyncurrey.com/wp-login.php">Log in</a></li>
+		
+		
+
+		
+				</ul>
+
+	</aside><aside id="text-4" class="widget inner-padding widget_text">			<div class="textwidget"><script id="mNCC" language="javascript">
+   medianet_width = "728";
+   medianet_height = "90";
+   medianet_crid = "634546210";
+   medianet_versionId = "111299";
+   (function() {
+       var isSSL = 'https:' == document.location.protocol;
+       var mnSrc = (isSSL ? 'https:' : 'http:') + '//contextual.media.net/nmedianet.js?cid=8CU9DK938' + (isSSL ? '&https=1' : '');
+       document.write('<scr' + 'ipt type="text/javascript" id="mNSC" src="' + mnSrc + '"></scr' + 'ipt>');
+   })();
+</script></div>
+		</aside>	</div>
+</div>
+
+	</div>
+</div>
+
+
+<div class="site-footer">
+			<footer class="site-info" aria-label="Site" itemtype="https://schema.org/WPFooter" itemscope="">
+			<div class="inside-site-info grid-container">
+								<div class="copyright-bar">
+					<span class="copyright">© 2026 Martyn Currey</span>				</div>
+			</div>
+		</footer>
+		</div>
+
+            <script>
+                jQuery(function($){
+
+                    
+                });
+            </script>
+            <div id="fb-root"></div>
+            <script id="generate-a11y">!function(){"use strict";if("querySelector"in document&&"addEventListener"in window){var e=document.body;e.addEventListener("mousedown",function(){e.classList.add("using-mouse")}),e.addEventListener("keydown",function(){e.classList.remove("using-mouse")})}}();</script><link rel="stylesheet" id="gglcptch-css" href="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/gglcptch.css" media="all">
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/wp-polyfill-inert.min.js" id="wp-polyfill-inert-js"></script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/regenerator-runtime.min.js" id="regenerator-runtime-js"></script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/wp-polyfill.min.js" id="wp-polyfill-js"></script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/hooks.min.js" id="wp-hooks-js"></script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/i18n.min.js" id="wp-i18n-js"></script>
+<script id="wp-i18n-js-after">
+wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
+</script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/jquery.form.min.js" id="jquery-form-js"></script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/wp-syntax.js" id="wp-syntax-js-js"></script>
+<!--[if lte IE 11]>
+<script src="https://www.martyncurrey.com/wp-content/themes/generatepress/assets/js/classList.min.js?ver=3.5.1" id="generate-classlist-js"></script>
+<![endif]-->
+<script id="generate-menu-js-extra">
+var generatepressMenu = {"toggleOpenedSubMenus":"1","openSubMenuLabel":"Open Sub-Menu","closeSubMenuLabel":"Close Sub-Menu"};
+</script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/menu.min.js" id="generate-menu-js"></script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/comment-reply.min.js" id="comment-reply-js" async="" data-wp-strategy="async"></script>
+<script defer="defer" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/akismet-frontend.js" id="akismet-frontend-js"></script>
+<script data-cfasync="false" async="async" defer="defer" src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/api.js" id="gglcptch_api-js"></script>
+<script id="gglcptch_script-js-extra">
+var gglcptch = {"options":{"version":"v2","sitekey":"6Lf7O7wUAAAAABba4Y3w_qIrtmTnuT73XYUd4Jep","error":"<strong>Warning<\/strong>:&nbsp;More than one reCAPTCHA has been found in the current form. Please remove all unnecessary reCAPTCHA fields to make it work properly.","disable":0,"theme":"light"},"vars":{"visibility":false}};
+</script>
+<script src="Using%20an%20Arduino%20and%20a%20optocoupler%20to%20activate%20a%20camera%20shutter%20%E2%80%93%20Martyn%20Currey_files/script.js" id="gglcptch_script-js"></script>
+
+
+
+</body></html>

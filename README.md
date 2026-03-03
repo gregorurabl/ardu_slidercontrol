@@ -40,7 +40,7 @@ This project is based on a guide by Marco Kleine-Albers (Mega-Testberichte.de) a
 | Display | Niunion 3.5" TFT LCD Shield, 480×320, 8-bit parallel, resistive touchscreen, MCUFRIEND_kbv-compatible — ASIN: B08KG51VLW | [amazon.de](https://www.amazon.de/dp/B08KG51VLW) ✅ |
 | Motor Mount (3D Print) | Parametric mount for iFootage Shark S1 motorization. Author: Benjamin (Hamburg). Original page no longer available. | mein-slider.de/ifootage-shark-s1-motorhalterung ❌ offline |
 | Camera Trigger Reference | Martyn Currey — "Using an Arduino and an optocoupler to activate a camera shutter" — basis for optocoupler circuit design, resistor calculation and jack pinout | [martyncurrey.com/activating-the-shutter-release](https://www.martyncurrey.com/activating-the-shutter-release/) ✅ |
-| Microstepping Reference | A4988 driver pin mapping and microstepping mode table | [lastminuteengineers.com](https://lastminuteengineers.com/a4988-stepper-motor-driver-arduino-tutorial/) ✅ |
+| Microstepping Reference | A4988 driver pin mapping and microstepping mode table | [Pololu Robotics & Electronics](https://www.pololu.com/product/1182) ✅ |
 
 ### 1.2 Arduino Libraries
 
@@ -161,14 +161,18 @@ Module detection is automatic at startup: the firmware sends a single ping at ma
 
 ### 3.1 TFT Display
 
-| Signal | Arduino Mega Pin | Notes |
-|---|---|---|
-| tft_CS | A3 | Chip Select |
-| tft_CD | A2 | Command / Data |
-| tft_WR | A1 | Write |
-| tft_RD | A0 | Read |
-| tft_RST | A4 | Reset (can also connect to Arduino RST) |
-| tft_D0 – tft_D7 | 8, 9, 2, 3, 4, 5, 6, 7 | 8-bit data bus |
+The PCB silkscreen uses the prefix `LCD_` (not `TFT_`). The signal `tft_CD` in firmware corresponds to `LCD_RS` on the board — RS (Register Select) and CD (Command/Data) are the same signal: LOW = command, HIGH = data.
+
+| Firmware Name | PCB Label | Arduino Mega Pin | Notes |
+|---|---|---|---|
+| tft_CS | LCD_CS | A3 | Chip Select |
+| tft_CD | **LCD_RS** | A2 | Register Select (= Command/Data) |
+| tft_WR | LCD_WR | A1 | Write |
+| tft_RD | LCD_RD | A0 | Read |
+| tft_RST | LCD_RST | A4 | Reset (can also connect to Arduino RST) |
+| tft_D0 – tft_D1 | LCD_D0, LCD_D1 | 8, 9 | 8-bit data bus (low bits) |
+| tft_D2 – tft_D7 | LCD_D2 – LCD_D7 | 2, 3, 4, 5, 6, 7 | 8-bit data bus (high bits) |
+| *(not used)* | SD_SS, SD_DI, SD_DO, SD_SCK | 10, 11, 12, 13 | SD card interface — not used in this project |
 
 ### 3.2 Touchscreen (Resistive)
 
