@@ -1,12 +1,12 @@
 # Slidercontrol V2.1
-### Motorized Camera Slider — Sources & Hardware Documentation
+### Motorized Camera Slider - Sources and Hardware Documentation
 
 **Author:** Gregor Urabl | [gregorurabl.at](https://gregorurabl.at)  
 **Version:** 2.1  
 **Platform:** Arduino Mega 2560 (AZ-Delivery Clone)  
 **Slider:** Rollei / iFootage Shark S1
 
-> **Work in Progress** — This documentation is incomplete and subject to change without notice.
+> **Work in Progress** - This documentation is incomplete and subject to change without notice.
 
 > **Disclaimer:** This project is shared for educational and personal reference purposes only. No support is provided. If you choose to replicate this project, you do so entirely at your own risk. The author accepts no responsibility for any damage to equipment, components, cameras, or any other property, nor for any personal injury, that may result from building or operating this or a similar system. Working with stepper motors, motor drivers and external power supplies involves voltages and currents that can cause permanent hardware damage if wired incorrectly. Always verify your wiring before applying power.
 
@@ -16,13 +16,75 @@
 
 Slidercontrol V2.1 is a fully self-contained motorized camera slider controller built around an Arduino Mega 2560. It drives a NEMA 17 stepper motor with planetary gearbox via an A4988 driver and provides a touchscreen UI on a 3.5" TFT shield. An optional ultrasonic sensor acts as an automatic end-stop, and a galvanically isolated camera trigger fires a Canon DSLR in sync with slider movement for timelapse sequences.
 
+### Project History - Fork of Mega-Testberichte.de
+
+This project started as a close implementation of the [Mega-Testberichte.de motorized slider guide](https://www.mega-testberichte.de/artikel/kameraslider-motorisieren) by Marco Kleine-Albers, which I recommend consulting alongside this documentation for build photos, a step-by-step walkthrough and additional context - it is the more visually complete reference.
+
+Over time the project diverged significantly in both hardware and software. Key reasons for branching off:
+
+- **MobaTools instead of AccelStepper:** The original guide uses AccelStepper, which generates blocking code during motor movement. When the ultrasonic end-stop sensor was added to the system (which predates the camera trigger), non-blocking motor control became a hard requirement - the sonar loop must keep running while the motor moves. MobaTools, developed by MicroBahner as an Arduino library for model railroaders (MOdel BAhn), provides a fully non-blocking stepper implementation and is optimized for fine-grained, precise movement control - exactly what smooth camera slider travel requires. The library origins in model rail applications mean it handles slow, precise, repeatable motion particularly well.
+- **Planetary gearbox motor:** The motor choice with integrated 1:14 gearbox changes the tuning, microstepping strategy and speed range significantly compared to a standard NEMA 17.
+- **Camera trigger system:** An entirely new hardware and software subsystem not present in the original guide.
+- **Serial remote control:** Added for computer-controlled timelapse sequences.
+
+The original guide remains the better starting point for someone new to the project. This documentation focuses on what has changed, the reasoning behind it, and the specifics of this particular build.
+
+### Controller Housing
+
+The housing used in early versions of this build is the enclosure published by Marco Kleine-Albers on Thingiverse: [thingiverse.com/thing:3344179](https://www.thingiverse.com/thing:3344179). It was printed and used through several beta versions.
+
+The housing was later modified to:
+- Increase internal volume to accommodate the additional wiring for the camera trigger circuit
+- Increase wall thickness for improved structural stability
+
+Modified STL files will be added to this repository.
+
+### Tested Payloads
+
+The system has been tested with the following camera setups on a horizontal slider:
+
+| Setup | Approx. Weight | Result |
+|---|---|---|
+| Canon EOS 7D + lens | ~1.5 kg | Reliable at all speed settings |
+| Canon EOS 5D Mark IV + lens | ~2.5 kg | Reliable at all speed settings |
+| Canon EOS C400 (fully rigged) | ~6 kg | Moved without issues |
+
+The Canon C400 test in particular is notable - a cinema camera fully rigged approaches the practical limits of the slider platform itself.
+
+#### Theoretical Maximum Load
+
+The following is a rough estimate based on component datasheets. Real-world load capacity depends heavily on slider bearing condition, belt tension, incline angle and chosen speed.
+
+**Motor output torque (at gearbox output shaft):**
+```
+T_out = T_motor × gear_ratio × efficiency
+T_out = 0.52 Nm × 13.73 × 0.80 = ~5.7 Nm (theoretical peak)
+```
+The gearbox max permissible continuous torque is rated at **3 Nm**, which is the practical ceiling regardless of motor output.
+
+**Force available at belt/drive:**  
+Assuming a typical belt pulley radius of ~10–15 mm:
+```
+F = T / r = 3 Nm / 0.012 m = 250 N (~25 kg-equivalent)
+```
+
+**Real limiting factors (in order of likely constraint):**
+1. **Slider rated payload** - the iFootage Shark S1 is rated for approximately 8 kg. This is the most restrictive limit for horizontal use.
+2. **Gearbox max continuous torque** - 3 Nm (5 Nm momentary peak)
+3. **Gearbox shaft max axial load** - 50 N (~5 kg linear force along the shaft axis)
+4. **A4988 current limit** - set to ~1.18 A in this build (~70% of rated); higher current settings increase torque headroom but also heat
+
+For horizontal use, the slider's own payload rating is the practical limit. The motor and gearbox have significant torque headroom for loads within that rating. Inclined or vertical use would require a separate calculation and is untested.
+
+> These figures are theoretical estimates derived from component datasheets and standard engineering assumptions. They are not guaranteed values. Do not exceed the rated capacity of your slider platform.
+
 ### What This Project Does
 
 The controller moves a camera along a slider rail at configurable speed, distance and direction. Three operating modes are available:
 
-- **Normal Run** — moves the slider a set distance at a set speed, with optional return to start position
-- **Manual Run** — continuous motor rotation for free-form positioning, start/stop via touchscreen
-- **Timelapse** — divides the total travel into equal sub-steps, pauses at each position for a configurable delay, and optionally fires the camera shutter at every stop
+- **Normal Run** - moves the slider a set distance at a set speed, with optional return to start position
+- **Manual Run** - continuous motor rotation for free-form positioning, start/stop via touchscreen
+- **Timelapse** - divides the total travel into equal sub-steps, pauses at each position for a configurable delay, and optionally fires the camera shutter at every stop
 
 All parameters (speed, distance, ramp, delay, subdivisions) are adjusted on the touchscreen. The controller can also be operated via serial commands over USB.
 
@@ -49,7 +111,7 @@ All parameters (speed, distance, ramp, delay, subdivisions) are adjusted on the 
 
 **Tools**
 - Soldering iron
-- Multimeter — required for A4988 current limit calibration
+- Multimeter - required for A4988 current limit calibration
 
 ### Wiring Overview
 
@@ -72,7 +134,7 @@ USB Power Bank ─────────────────────�
                                          Stepper Motor
 ```
 
-The TFT shield plugs directly onto the Arduino Mega headers — no separate display wiring required. Motor, A4988 and power supply are wired as a separate circuit. The camera trigger is a standalone optocoupler circuit connected to D47 and GND.
+The TFT shield plugs directly onto the Arduino Mega headers - no separate display wiring required. Motor, A4988 and power supply are wired as a separate circuit. The camera trigger is a standalone optocoupler circuit connected to D47 and GND.
 
 **Important:** The Arduino (logic) and the motor driver (power) use separate ground connections that share a common reference point only at the DC jack. See [Ground Separation](#33-stepper-motor-driver-a4988) for details.
 
@@ -80,7 +142,7 @@ The TFT shield plugs directly onto the Arduino Mega headers — no separate disp
 
 The controller can be operated remotely over USB via any serial terminal (e.g. Arduino Serial Monitor, PuTTY) at **115200 baud**.
 
-Commands are comma-separated strings terminated with a newline (`\n`). Each field can optionally carry a label prefix using a colon (`label:value`) — the parser strips everything up to and including the last colon, so both formats are accepted.
+Commands are comma-separated strings terminated with a newline (`\n`). Each field can optionally carry a label prefix using a colon (`label:value`) - the parser strips everything up to and including the last colon, so both formats are accepted.
 
 **Command format:**
 
@@ -130,7 +192,7 @@ Unused fields still need to be present as placeholders. For `rth`, all fields af
 
 ## Schematic
 
-> **Work in Progress** — Full wiring schematic is currently being created in KiCad 9. The `.kicad_sch` file will be added to this repository once complete.
+> **Work in Progress** - Full wiring schematic is currently being created in KiCad 9. The `.kicad_sch` file will be added to this repository once complete.
 
 The schematic covers:
 - Arduino Mega 2560 with all used pin connections
@@ -151,13 +213,14 @@ This project is based on a guide by Marco Kleine-Albers (Mega-Testberichte.de) a
 
 | Source | Details | URL |
 |---|---|---|
-| Original Guide | Marco Kleine-Albers, Mega-Testberichte.de — complete build guide incl. schematic, parts list and software base | [mega-testberichte.de/artikel/kameraslider-motorisieren](https://www.mega-testberichte.de/artikel/kameraslider-motorisieren) ✅ |
-| Adaptation & Extension | Gregor Urabl (gregorurabl.at) — adapted for Adafruit TFT & MobaTools, optimized for planetary geared stepper, camera trigger extension | [gregorurabl.at](https://gregorurabl.at) |
-| Display | Niunion 3.5" TFT LCD Shield, 480×320, 8-bit parallel, resistive touchscreen, MCUFRIEND_kbv-compatible — ASIN: B08KG51VLW | [amazon.de](https://www.amazon.de/dp/B08KG51VLW) ✅ |
+| Original Guide | Marco Kleine-Albers, Mega-Testberichte.de - complete build guide incl. schematic, parts list and software base | [mega-testberichte.de/artikel/kameraslider-motorisieren](https://www.mega-testberichte.de/artikel/kameraslider-motorisieren) ✅ |
+| Adaptation & Extension | Gregor Urabl (gregorurabl.at) - adapted for Adafruit TFT & MobaTools, optimized for planetary geared stepper, camera trigger extension | [gregorurabl.at](https://gregorurabl.at) |
+| Display | Niunion 3.5" TFT LCD Shield, 480×320, 8-bit parallel, resistive touchscreen, MCUFRIEND_kbv-compatible - ASIN: B08KG51VLW | [amazon.de](https://www.amazon.de/dp/B08KG51VLW) ✅ |
 | Motor Mount (3D Print) | Parametric mount for iFootage Shark S1 motorization. Author: Benjamin (Hamburg). Original page no longer available. | mein-slider.de/ifootage-shark-s1-motorhalterung ❌ offline |
-| Camera Trigger Reference | Martyn Currey — "Using an Arduino and an optocoupler to activate a camera shutter" — basis for optocoupler circuit design, resistor calculation and jack pinout | [martyncurrey.com/activating-the-shutter-release](https://www.martyncurrey.com/activating-the-shutter-release/) ✅ |
+| Camera Trigger Reference | Martyn Currey - "Using an Arduino and an optocoupler to activate a camera shutter" - basis for optocoupler circuit design, resistor calculation and jack pinout | [martyncurrey.com/activating-the-shutter-release](https://www.martyncurrey.com/activating-the-shutter-release/) ✅ |
 | Microstepping Reference | A4988 driver pin mapping and microstepping mode table | [lastminuteengineers.com](https://lastminuteengineers.com/a4988-stepper-motor-driver-arduino-tutorial/) ✅ |
-| A4988 Product & Datasheet | Pololu A4988 stepper driver carrier — official product page incl. schematic, pinout and datasheet | [pololu.com/product/1182](https://www.pololu.com/product/1182) ✅ |
+| A4988 Product & Datasheet | Pololu A4988 stepper driver carrier - official product page incl. schematic, pinout and datasheet | [pololu.com/product/1182](https://www.pololu.com/product/1182) ✅ |
+| MobaTools Library | Arduino library by MicroBahner (f-pm+gh@mailbox.org). Originally developed for model railroaders (MOdel BAhn), optimized for precise, fine-grained stepper control - which maps directly to the needs of smooth camera slider movement. Used here as a non-blocking replacement for AccelStepper. | [github.com/MicroBahner/MobaTools](https://github.com/MicroBahner/MobaTools) ✅ |
 
 ### 1.2 Arduino Libraries
 
@@ -167,7 +230,7 @@ This project is based on a guide by Marco Kleine-Albers (Mega-Testberichte.de) a
 | Adafruit_TFTLCD | TFT display driver | Adafruit Industries |
 | TouchScreen | Resistive touchscreen input | Adafruit Industries |
 | MCUFRIEND_kbv | Hardware-specific TFT driver | David Prentice (GitHub) |
-| MobaTools | Stepper motor & timer control | MicroController.net |
+| MobaTools | Stepper motor and timer control. Non-blocking implementation, originally developed for model railroaders (MOdel BAhn) by MicroBahner - optimized for fine-grained, precise movement. Replaces AccelStepper to enable concurrent sonar and motor operation. | [github.com/MicroBahner/MobaTools](https://github.com/MicroBahner/MobaTools) |
 | NewPing | HC-SR04 ultrasonic sensor | Tim Eckel (Arduino Library Manager) |
 
 ---
@@ -180,7 +243,7 @@ This project is based on a guide by Marco Kleine-Albers (Mega-Testberichte.de) a
 |---|---|
 | Microcontroller | AZ-Delivery Arduino Mega 2560 Clone (replacement after hardware incident, see [2.2](#22-hardware-history--incidents)) |
 | Display | 3.5" Parallel TFT Shield, MCUFRIEND_kbv-compatible, 480×320 px |
-| Stepper Motor | Stepperonline 17HS19-1684s-PG14 — 1.8°/step — Planetary Gearbox 1:14 |
+| Stepper Motor | Stepperonline 17HS19-1684s-PG14 - 1.8°/step - Planetary Gearbox 1:14 |
 | Motor Driver | A4988 (final version; TMC2209 tested previously, see [2.2](#22-hardware-history--incidents)) |
 | Slider Platform | Rollei / iFootage Shark S1 |
 | Camera Trigger | 4N33 optocoupler + 390 Ω resistor + 2.5 mm TRS jack |
@@ -190,13 +253,13 @@ This project is based on a guide by Marco Kleine-Albers (Mega-Testberichte.de) a
 
 ### 2.2 Hardware History & Incidents
 
-#### TMC2209 V2.0 — tested, not used in final version
+#### TMC2209 V2.0 - tested, not used in final version
 
 A test with a TMC2209 V2.0 Ultra Silent 2.5A stepper driver resulted in a cable fire and the burnout of the Arduino Mega's DC-In voltage regulator. The driver was also destroyed in the process. The exact root cause could not be conclusively determined; possible contributing factors include undersized wiring, a pre-existing defect in the DC-In regulator, or an overcurrent condition caused by the driver.
 
 Apart from slightly quieter motor operation, the TMC2209 showed no meaningful improvement in motion smoothness compared to the A4988. The stepper motor's planetary gearbox (1:14) already provides inherently smooth and consistent motion, which largely eliminates the benefit of Stealthchop. The final version therefore uses the A4988.
 
-#### AZ-Delivery Mega 2560 Clone — replacement after hardware incident
+#### AZ-Delivery Mega 2560 Clone - replacement after hardware incident
 
 Following the failure of the original Arduino Mega 2560, the system runs successfully on an AZ-Delivery Mega 2560 clone. Pin mapping and feature set are fully compatible with the original; all documented functions operate reliably on the clone.
 
@@ -204,14 +267,14 @@ Following the failure of the original Arduino Mega 2560, the system runs success
 
 ### 2.3 Stepper Motor & Gearbox
 
-The Stepperonline 17HS19-1684s-PG14 features an integrated planetary gearbox with a 1:14 ratio, providing high holding torque at low RPM — well suited for smooth, consistent slider travel. Microstepping is disabled in firmware because the gearbox already provides sufficient mechanical smoothing.
+The Stepperonline 17HS19-1684s-PG14 features an integrated planetary gearbox with a 1:14 ratio, providing high holding torque at low RPM - well suited for smooth, consistent slider travel. Microstepping is disabled in firmware because the gearbox already provides sufficient mechanical smoothing.
 
 | Parameter | Value |
 |---|---|
 | Step angle | 1.8° (200 full steps/rev) |
 | Gearbox ratio | 1:14 |
 | Microstepping | Disabled (pins M1–M3 NC) |
-| Steps/rev in firmware | 3200 (200 × 16) — constant retained for reference |
+| Steps/rev in firmware | 3200 (200 × 16) - constant retained for reference |
 
 > **Note:** The 3200 steps/rev constant in the code reflects the full microstepping configuration. With the planetary gearbox and microstepping disabled, effective mechanical resolution differs. The constant is kept for potential use without the gearbox.
 
@@ -240,7 +303,7 @@ Camera (Canon N3)
 
 #### How It Works
 
-The Canon N3 connector places approximately 3.2V on the shutter and focus lines — **this voltage is supplied by the camera itself**, not by the Arduino. Triggering is achieved by **shorting the shutter line to ground** via the optocoupler. The optocoupler ensures there is no electrical connection between the Arduino circuit and the camera circuit, protecting the camera from any voltage on the controller side.
+The Canon N3 connector places approximately 3.2V on the shutter and focus lines - **this voltage is supplied by the camera itself**, not by the Arduino. Triggering is achieved by **shorting the shutter line to ground** via the optocoupler. The optocoupler ensures there is no electrical connection between the Arduino circuit and the camera circuit, protecting the camera from any voltage on the controller side.
 
 #### Circuit
 
@@ -282,7 +345,7 @@ Arduino drives `TRIGGER_PIN` (D47) `LOW` to close the optocoupler and short the 
 
 ### 2.5 Optional Ultrasonic End-Stop Sensor
 
-An HC-SR04 ultrasonic module can be used as an end-stop safety mechanism. It stops the motor automatically when an obstacle (e.g. the end of the slider rail) is detected within 7 cm. The module shares pins D47 and D49 with the camera trigger — **only one module can be connected at a time.**
+An HC-SR04 ultrasonic module can be used as an end-stop safety mechanism. It stops the motor automatically when an obstacle (e.g. the end of the slider rail) is detected within 7 cm. The module shares pins D47 and D49 with the camera trigger - **only one module can be connected at a time.**
 
 Module detection is automatic at startup: the firmware sends a single ping at maximum range. If a response is received, Sonar Mode is activated (green indicator on display). If the ping fails, Camera Mode is activated (blue indicator).
 
@@ -302,7 +365,7 @@ Module detection is automatic at startup: the firmware sends a single ping at ma
 
 ### 3.1 TFT Display
 
-The PCB silkscreen uses the prefix `LCD_` (not `TFT_`). The signal `tft_CD` in firmware corresponds to `LCD_RS` on the board — RS (Register Select) and CD (Command/Data) are the same signal: LOW = command, HIGH = data.
+The PCB silkscreen uses the prefix `LCD_` (not `TFT_`). The signal `tft_CD` in firmware corresponds to `LCD_RS` on the board - RS (Register Select) and CD (Command/Data) are the same signal: LOW = command, HIGH = data.
 
 | Firmware Name | PCB Label | Arduino Mega Pin | Notes |
 |---|---|---|---|
@@ -313,14 +376,14 @@ The PCB silkscreen uses the prefix `LCD_` (not `TFT_`). The signal `tft_CD` in f
 | tft_RST | LCD_RST | A4 | Reset (can also connect to Arduino RST) |
 | tft_D0 – tft_D1 | LCD_D0, LCD_D1 | 8, 9 | 8-bit data bus (low bits) |
 | tft_D2 – tft_D7 | LCD_D2 – LCD_D7 | 2, 3, 4, 5, 6, 7 | 8-bit data bus (high bits) |
-| *(not used)* | SD_SS, SD_DI, SD_DO, SD_SCK | 10, 11, 12, 13 | SD card interface — not used in this project |
+| *(not used)* | SD_SS, SD_DI, SD_DO, SD_SCK | 10, 11, 12, 13 | SD card interface - not used in this project |
 
 ### 3.2 Touchscreen (Resistive)
 
 | Signal | Arduino Mega Pin | Notes |
 |---|---|---|
-| YP | A1 | Analog pin — shared with tft_WR |
-| XM | A2 | Analog pin — shared with tft_CD |
+| YP | A1 | Analog pin - shared with tft_WR |
+| XM | A2 | Analog pin - shared with tft_CD |
 | YM | 7 | Digital pin |
 | XP | 6 | Digital pin |
 
@@ -332,12 +395,12 @@ The PCB silkscreen uses the prefix `LCD_` (not `TFT_`). The signal `tft_CD` in f
 
 | Signal | Arduino Mega Pin | A4988 Pin | Notes |
 |---|---|---|---|
-| ENABLE | 23 | ENABLE | Active LOW — motor disabled by default |
+| ENABLE | 23 | ENABLE | Active LOW - motor disabled by default |
 | STEP | 25 | STEP | Step pulse |
 | DIR | 27 | DIR | Direction |
-| M1 | A8 | MS1 | Microstepping bit 1 — NC (disabled) |
-| M2 | A9 | MS2 | Microstepping bit 2 — NC (disabled) |
-| M3 | A10 | MS3 | Microstepping bit 3 — NC (disabled) |
+| M1 | A8 | MS1 | Microstepping bit 1 - NC (disabled) |
+| M2 | A9 | MS2 | Microstepping bit 2 - NC (disabled) |
+| M3 | A10 | MS3 | Microstepping bit 3 - NC (disabled) |
 | 5V | 5V | VDD | Logic supply |
 | GND | GND | GND | Logic ground |
 
@@ -358,7 +421,7 @@ Both grounds share a common reference point at the power supply / DC jack, but s
 
 | A4988 Pin | Connection | Notes |
 |---|---|---|
-| VMOT | 12V PSU (+) | Motor supply voltage — 8–35V supported |
+| VMOT | 12V PSU (+) | Motor supply voltage - 8–35V supported |
 | GND (power side) | 12V PSU (−) | Motor ground |
 
 **100 µF electrolytic capacitor** across VMOT and GND, placed as close to the A4988 as possible. Protects the driver from voltage spikes caused by the motor's inductance.
@@ -367,12 +430,12 @@ Both grounds share a common reference point at the power supply / DC jack, but s
 
 | A4988 Pin | Stepper Wire | Coil |
 |---|---|---|
-| 1A | — | Coil A, terminal 1 |
-| 1B | — | Coil A, terminal 2 |
-| 2A | — | Coil B, terminal 1 |
-| 2B | — | Coil B, terminal 2 |
+| 1A | - | Coil A, terminal 1 |
+| 1B | - | Coil A, terminal 2 |
+| 2A | - | Coil B, terminal 1 |
+| 2B | - | Coil B, terminal 2 |
 
-> Coil assignment and wire color depend on the specific motor. For the **17HS19-1684s-PG14** consult the datasheet. Swapping both wires of one coil reverses that coil's polarity and changes rotation direction — equivalent to toggling DIR.
+> Coil assignment and wire color depend on the specific motor. For the **17HS19-1684s-PG14** consult the datasheet. Swapping both wires of one coil reverses that coil's polarity and changes rotation direction - equivalent to toggling DIR.
 
 
 #### Current Limit Calibration (VREF)
@@ -421,7 +484,7 @@ Per Mega-Testberichte.de, a VREF of **~0.8 V** on an R100 board was found to wor
 
 | Signal | Arduino Mega Pin | Notes |
 |---|---|---|
-| TRIGGER_PIN | 47 | Sonar: trigger output — Camera: shutter pulse (LOW-active) |
-| ECHO_PIN | 49 | Sonar: echo input — Camera: not used |
+| TRIGGER_PIN | 47 | Sonar: trigger output - Camera: shutter pulse (LOW-active) |
+| ECHO_PIN | 49 | Sonar: echo input - Camera: not used |
 
 > **D47 and D49 are shared between the sonar module and the camera trigger.** Automatic detection at startup determines which module is active. Never connect both simultaneously.
