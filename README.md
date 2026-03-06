@@ -10,6 +10,8 @@
 
 > **Disclaimer:** This project is shared for educational and personal reference purposes only. No support is provided. If you choose to replicate this project, you do so entirely at your own risk. The author accepts no responsibility for any damage to equipment, components, cameras, or any other property, nor for any personal injury, that may result from building or operating this or a similar system. Working with stepper motors, motor drivers and external power supplies involves voltages and currents that can cause permanent hardware damage if wired incorrectly. Always verify your wiring before applying power.
 
+![image (8)](https://github.com/user-attachments/assets/612e09ca-9940-4b95-91f2-3881276d3afc)
+
 ---
 
 ## Table of Contents
@@ -216,7 +218,7 @@ This project is based on a guide by Marco Kleine-Albers (Mega-Testberichte.de) a
 
 ## Schematic
 
-> **Work in Progress** - Full wiring schematic is currently being created in KiCad 9.
+![SliderControl_Schematic](https://github.com/user-attachments/assets/05a1f284-e010-41c4-a1aa-6b4b2ab373f1)
 
 The KiCad schematic file is at `KiCad/Slidercontrol_V2_1_Corrected.kicad_sch`.
 
@@ -313,6 +315,8 @@ Arduino D47 ──── R1 (390 Ω) ──── 4N33 Pin 1 (Anode)
                                   Jack Ring ──── NC         ──[cable]── N3 Focus (not triggered)
 ```
 
+![CameraTrigger](https://github.com/user-attachments/assets/dd89f23e-06e8-402b-b35b-606da665f3c8)
+
 #### 2.5 mm TRS Jack Pinout
 
 | Contact | Connected to | Via adapter cable |
@@ -372,12 +376,30 @@ The housing was later modified to increase internal volume for the additional ca
 | `deckel_displayseite.stl` | Modified lid - raised variant, additional height for cable and electronics volume |
 | `deckel_unterseite.stl` | Lid underside (modifier body) |
 
-#### Motor Drive - Direct Drive vs. Belt Drive
+<details>
+<summary>Show Photos</summary>summary>
+![image (9)](https://github.com/user-attachments/assets/3e00675c-9bf6-42bb-94b2-72b41b06fc5e)
+![image (10)](https://github.com/user-attachments/assets/b407b3cb-b684-4bd1-9aa5-fee09aea446c)
+![image (7)](https://github.com/user-attachments/assets/8d7ac38e-9bfa-4386-b78f-8393ffd9c3dc)
+</details>
+
+Original Housing before raising lid
+
+### 2.7 Motor Drive - Direct Drive vs. Belt Drive
 
 **Mega-Testberichte.de approach:** The original guide attaches the motor directly to the slider's existing drive belt via a gear adapter, effectively replacing the manual knob with a motor. This removes the ability to operate the slider by hand.
 
 **mein-slider.de housing (used as base here):** The 3D-printed motor housing from mein-slider.de was specifically designed for the iFootage Shark S1 and preserves manual operability by using a separate add-on adapter rather than replacing the original drive belt. However, it routes motor torque through a dedicated secondary drive belt, which created the sourcing problem: no correctly sized belt could be found. The only available belt was too long to tension properly.
 
+<details>
+<summary>Show Photos</summary>summary>
+![image (1)](https://github.com/user-attachments/assets/7f87cc37-3e26-4848-8b87-030039ecb564)
+![image (2)](https://github.com/user-attachments/assets/4b8538b5-b228-4e78-84f2-9b9a01a2033c)
+![image (3)](https://github.com/user-attachments/assets/746a09bd-04a1-4035-9f70-b4e28effbdca)
+![image (4)](https://github.com/user-attachments/assets/de8bf87c-e76c-4417-a536-cbc389ef689a)
+![image](https://github.com/user-attachments/assets/c1c4d273-ce9e-4c24-9468-c92c2bc1083e)
+</details>
+   
 **Direct drive solution:** After several experiments scaling the motor housing, a direct drive variant was developed. The motor shaft couples directly to the slider's drive element via a printed adapter, with no belt or intermediate gears.
 
 This turned out to be the better solution in every respect:
@@ -386,7 +408,7 @@ This turned out to be the better solution in every respect:
 - Smaller and simpler housing
 - Manual operability of the Shark S1 is retained through the add-on adapter design
 
-Original drive STL files from the reference design are in `3D Print/Original_Drive_STL/`. The modified direct drive files are in `3D Print/Drive_Fork/`:
+Original drive STL files from the reference design are in `3D Print/Original_Drive_STL/`.
 
 | File | Description |
 |---|---|
@@ -394,7 +416,7 @@ Original drive STL files from the reference design are in `3D Print/Original_Dri
 | `gehaeuse_motorseite_v02.stl` | Motor housing - motor-facing side |
 | `antrieb_v02.stl` | Drive element / motor shaft adapter |
 
-The iterative development process - including test prints, fit experiments and the final direct drive solution - is documented in `Fotos_Videos/`.
+The iterative development process - including test prints, fit experiments and the final direct drive solution - is also documented in `Fotos_Videos/`.
 
 ---
 
