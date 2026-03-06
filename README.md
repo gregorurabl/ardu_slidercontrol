@@ -12,6 +12,28 @@
 
 ---
 
+## Table of Contents
+
+1. [Sources & Libraries](#1-sources--libraries)
+   - [1.1 Project Base](#11-project-base)
+   - [1.2 Arduino Libraries](#12-arduino-libraries)
+2. [Schematic](#schematic)
+3. [Hardware](#2-hardware)
+   - [2.1 Main Components](#21-main-components)
+   - [2.2 Hardware History & Incidents](#22-hardware-history--incidents)
+   - [2.3 Stepper Motor & Gearbox](#23-stepper-motor--gearbox)
+   - [2.4 Camera Trigger Circuit](#24-camera-trigger-circuit)
+   - [2.5 Optional Ultrasonic End-Stop Sensor](#25-optional-ultrasonic-end-stop-sensor)
+   - [2.6 Controller Housing](#26-controller-housing)
+4. [Pin Reference (Arduino Mega 2560)](#3-pin-reference-arduino-mega-2560)
+   - [3.1 TFT Display](#31-tft-display)
+   - [3.2 Touchscreen (Resistive)](#32-touchscreen-resistive)
+   - [3.3 Stepper Motor Driver (A4988)](#33-stepper-motor-driver-a4988)
+   - [3.4 Sonar / Camera Trigger (shared)](#34-sonar--camera-trigger-shared)
+
+---
+
+
 ## Overview
 
 Slidercontrol V2.1 is a fully self-contained motorized camera slider controller built around an Arduino Mega 2560. It drives a NEMA 17 stepper motor with planetary gearbox via an A4988 driver and provides a touchscreen UI on a 3.5" TFT shield. An optional ultrasonic sensor acts as an automatic end-stop, and a galvanically isolated camera trigger fires a Canon DSLR in sync with slider movement for timelapse sequences.
@@ -28,16 +50,6 @@ Over time the project diverged significantly in both hardware and software. Key 
 - **Serial remote control:** Added for computer-controlled timelapse sequences.
 
 The original guide remains the better starting point for someone new to the project. This documentation focuses on what has changed, the reasoning behind it, and the specifics of this particular build.
-
-### Controller Housing
-
-The housing used in early versions of this build is the enclosure published by Marco Kleine-Albers on Thingiverse: [thingiverse.com/thing:3344179](https://www.thingiverse.com/thing:3344179). It was printed and used through several beta versions.
-
-The housing was later modified to:
-- Increase internal volume to accommodate the additional wiring for the camera trigger circuit
-- Increase wall thickness for improved structural stability
-
-Modified STL files will be added to this repository.
 
 ### Tested Payloads
 
@@ -171,40 +183,6 @@ Unused fields still need to be present as placeholders. For `rth`, all fields af
 
 ---
 
-## Table of Contents
-
-1. [Sources & Libraries](#1-sources--libraries)
-   - [1.1 Project Base](#11-project-base)
-   - [1.2 Arduino Libraries](#12-arduino-libraries)
-2. [Hardware](#2-hardware)
-   - [2.1 Main Components](#21-main-components)
-   - [2.2 Hardware History & Incidents](#22-hardware-history--incidents)
-   - [2.3 Stepper Motor & Gearbox](#23-stepper-motor--gearbox)
-   - [2.4 Camera Trigger Circuit](#24-camera-trigger-circuit)
-   - [2.5 Optional Ultrasonic End-Stop Sensor](#25-optional-ultrasonic-end-stop-sensor)
-3. [Pin Reference (Arduino Mega 2560)](#3-pin-reference-arduino-mega-2560)
-   - [3.1 TFT Display](#31-tft-display)
-   - [3.2 Touchscreen (Resistive)](#32-touchscreen-resistive)
-   - [3.3 Stepper Motor Driver (A4988)](#33-stepper-motor-driver-a4988)
-   - [3.4 Sonar / Camera Trigger (shared)](#34-sonar--camera-trigger-shared)
-
----
-
-## Schematic
-
-> **Work in Progress** - Full wiring schematic is currently being created in KiCad 9. The `.kicad_sch` file will be added to this repository once complete.
-
-The schematic covers:
-- Arduino Mega 2560 with all used pin connections
-- A4988 driver with motor power supply, 100 µF decoupling capacitor and stepper motor
-- Camera trigger circuit (4N33, R1, 2.5 mm jack)
-- HC-SR04 ultrasonic sensor (optional, shared pins D47/D49)
-- TFT shield pin mapping
-
-In the meantime, refer to the pin reference tables in [Section 3](#3-pin-reference-arduino-mega-2560) and the circuit diagrams in [Section 2.4](#24-camera-trigger-circuit) and [Section 3.3](#33-stepper-motor-driver-a4988).
-
----
-
 ## 1. Sources & Libraries
 
 ### 1.1 Project Base
@@ -234,6 +212,25 @@ This project is based on a guide by Marco Kleine-Albers (Mega-Testberichte.de) a
 | NewPing | HC-SR04 ultrasonic sensor | Tim Eckel (Arduino Library Manager) |
 
 ---
+
+
+## Schematic
+
+> **Work in Progress** - Full wiring schematic is currently being created in KiCad 9.
+
+The KiCad schematic file is at `KiCad/Slidercontrol_V2_1_Corrected.kicad_sch`.
+
+The schematic covers:
+- Arduino Mega 2560 with all used pin connections
+- A4988 driver with motor power supply, 100 µF decoupling capacitor and stepper motor
+- Camera trigger circuit (4N33, R1, 2.5 mm jack)
+- HC-SR04 ultrasonic sensor (optional, shared pins D47/D49)
+- TFT shield pin mapping
+
+In the meantime, refer to the pin reference tables in [Section 3](#3-pin-reference-arduino-mega-2560) and the circuit diagrams in [Section 2.4](#24-camera-trigger-circuit) and [Section 3.3](#33-stepper-motor-driver-a4988).
+
+---
+
 
 ## 2. Hardware
 
@@ -360,6 +357,77 @@ Module detection is automatic at startup: the firmware sends a single ping at ma
 | Ping interval | 50 ms (20× per second) |
 
 ---
+
+### 2.6 Controller Housing
+
+The housing used in early versions of this build is the enclosure published by Marco Kleine-Albers on Thingiverse: [thingiverse.com/thing:3344179](https://www.thingiverse.com/thing:3344179). It was printed and used through several beta versions.
+
+The original STL files are included in this repository at `3D Print/Mega-Testberichte Slider-Case (Arduino Mega+Touch LCD Sainsmart) - 3344179/` as an unmodified reference baseline.
+
+The housing was later modified to increase internal volume for the additional camera trigger wiring and to improve structural stability through thicker walls. Modified lid files are in `3D Print/Drive_Fork/`:
+
+| File | Description |
+|---|---|
+| `deckel_displayseite.v2.stl` | Modified lid - flat variant, increased wall thickness |
+| `deckel_displayseite.stl` | Modified lid - raised variant, additional height for cable and electronics volume |
+| `deckel_unterseite.stl` | Lid underside (modifier body) |
+
+#### Motor Drive - Direct Drive vs. Belt Drive
+
+**Mega-Testberichte.de approach:** The original guide attaches the motor directly to the slider's existing drive belt via a gear adapter, effectively replacing the manual knob with a motor. This removes the ability to operate the slider by hand.
+
+**mein-slider.de housing (used as base here):** The 3D-printed motor housing from mein-slider.de was specifically designed for the iFootage Shark S1 and preserves manual operability by using a separate add-on adapter rather than replacing the original drive belt. However, it routes motor torque through a dedicated secondary drive belt, which created the sourcing problem: no correctly sized belt could be found. The only available belt was too long to tension properly.
+
+**Direct drive solution:** After several experiments scaling the motor housing, a direct drive variant was developed. The motor shaft couples directly to the slider's drive element via a printed adapter, with no belt or intermediate gears.
+
+This turned out to be the better solution in every respect:
+- Full motor torque delivered directly to the slider with no belt slip or stretch
+- Fewer moving parts means fewer failure points
+- Smaller and simpler housing
+- Manual operability of the Shark S1 is retained through the add-on adapter design
+
+Original drive STL files from the reference design are in `3D Print/Original_Drive_STL/`. The modified direct drive files are in `3D Print/Drive_Fork/`:
+
+| File | Description |
+|---|---|
+| `gehaeuse_unterseite_v2.stl` | Motor housing - underside |
+| `gehaeuse_motorseite_v02.stl` | Motor housing - motor-facing side |
+| `antrieb_v02.stl` | Drive element / motor shaft adapter |
+
+The iterative development process - including test prints, fit experiments and the final direct drive solution - is documented in `Fotos_Videos/`.
+
+---
+
+### Repository Structure
+
+```
+/
+├── 3D Print/
+│   ├── Drive_Fork/                          # Modified direct drive and housing files
+│   │   ├── antrieb_v02.stl
+│   │   ├── deckel_displayseite.stl          # Lid raised variant
+│   │   ├── deckel_displayseite.v2.stl       # Lid flat variant
+│   │   ├── deckel_unterseite.stl
+│   │   ├── gehaeuse_motorseite_v02.stl
+│   │   └── gehaeuse_unterseite_v2.stl
+│   ├── Mega-Testberichte Slider-Case (Arduino Mega+Touch LCD Sainsmart) - 3344179/
+│   │   └── ...                              # Original Thingiverse files (unmodified)
+│   └── Original_Drive_STL/                  # Original belt drive reference files
+├── Datasheets/                              # Component datasheets
+├── Fotos_Videos/                            # Build photos and videos
+├── KiCad/
+│   └── Slidercontrol_V2_1_Corrected.kicad_sch
+└── README.md
+```
+
+---
+
+### Planned Features
+
+| Feature | Status |
+|---|---|
+| Timelapse runtime pre-calculation | Planned - display estimated total duration before a timelapse run starts, based on distance, subdivisions, delay and motor speed |
+
 
 ## 3. Pin Reference (Arduino Mega 2560)
 
