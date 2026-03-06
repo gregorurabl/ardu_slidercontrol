@@ -449,7 +449,7 @@ The iterative development process - including test prints, fit experiments and t
 | Feature | Status |
 |---|---|
 | Timelapse runtime pre-calculation | Planned - display estimated total duration before a timelapse run starts, based on distance, subdivisions, delay and motor speed |
-
+| App Remote Control | In Development - a bluetooth remote control via amartphone app.|
 
 ## 3. Pin Reference (Arduino Mega 2560)
 
