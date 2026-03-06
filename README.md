@@ -229,7 +229,7 @@ The schematic covers:
 - HC-SR04 ultrasonic sensor (optional, shared pins D47/D49)
 - TFT shield pin mapping
 
-In the meantime, refer to the pin reference tables in [Section 3](#3-pin-reference-arduino-mega-2560) and the circuit diagrams in [Section 2.4](#24-camera-trigger-circuit) and [Section 3.3](#33-stepper-motor-driver-a4988).
+Also refer to the pin reference tables in [Section 3](#3-pin-reference-arduino-mega-2560) and the circuit diagrams in [Section 2.4](#24-camera-trigger-circuit) and [Section 3.3](#33-stepper-motor-driver-a4988).
 
 ---
 
