@@ -52,6 +52,9 @@ class LabeledSlider(ctk.CTkFrame):
 
         self.columnconfigure(1, weight=1)
 
+        # Populate the entry field immediately so it is never blank on startup
+        self.set(from_)
+
     def _on_slider(self, value):
         self.entry_var.set(str(round(value, 1) if isinstance(value, float) else int(value)))
         if self._callback:
@@ -93,7 +96,7 @@ class LabeledSlider(ctk.CTkFrame):
 class NormalTab:
     def __init__(self, parent):
         frame = ctk.CTkFrame(parent, fg_color="transparent")
-        frame.pack(fill="both", expand=True, padx=8, pady=8)
+        frame.pack(fill="both", expand=False, padx=8, pady=8)
 
         # Speed (0–100%)
         self.speed = LabeledSlider(frame, "Speed", 0, 100, unit="%", steps=100)
@@ -106,6 +109,7 @@ class NormalTab:
 
         self.distance = LabeledSlider(dist_frame, "Distance", DISTANCE_MIN_STEPS,
                                       DISTANCE_MAX_STEPS, unit="steps", steps=340)
+        self.distance.set(DISTANCE_SHORT_STEPS)
         self.distance.pack(fill="x")
         self.distance.on_change(self._on_distance_change)
 
@@ -164,7 +168,7 @@ class NormalTab:
 class TimelapseTab:
     def __init__(self, parent):
         frame = ctk.CTkFrame(parent, fg_color="transparent")
-        frame.pack(fill="both", expand=True, padx=8, pady=8)
+        frame.pack(fill="both", expand=False, padx=8, pady=8)
 
         # Speed (0–100%)
         self.speed = LabeledSlider(frame, "Speed", 0, 100, unit="%", steps=100)
@@ -177,6 +181,7 @@ class TimelapseTab:
 
         self.distance = LabeledSlider(dist_frame, "Distance", DISTANCE_MIN_STEPS,
                                       DISTANCE_MAX_STEPS, unit="steps", steps=340)
+        self.distance.set(DISTANCE_SHORT_STEPS)
         self.distance.pack(fill="x")
         self.distance.on_change(self._on_distance_change)
 

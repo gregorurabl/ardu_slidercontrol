@@ -116,14 +116,18 @@ class App(ctk.CTk):
                       command=self._send_rth, **btn_cfg).pack(
             side="left", expand=True, fill="x", padx=(4, 8), pady=8)
 
-        # Preset buttons in a second row
+        # Preset + log utility buttons in a shared row
         preset_row = ctk.CTkFrame(self)
         preset_row.pack(fill="x", padx=12, pady=(0, 4))
 
-        ctk.CTkButton(preset_row, text="Load Preset", width=150,
+        ctk.CTkButton(preset_row, text="Load Preset", width=130,
                       command=self._load_preset).pack(side="left", padx=(8, 4), pady=4)
-        ctk.CTkButton(preset_row, text="Save Preset", width=150,
-                      command=self._save_preset).pack(side="left", padx=4, pady=4)
+        ctk.CTkButton(preset_row, text="Save Preset", width=130,
+                      command=self._save_preset).pack(side="left", padx=(0, 4), pady=4)
+        ctk.CTkButton(preset_row, text="Export Log", width=110,
+                      command=self._export_log).pack(side="left", padx=(0, 4), pady=4)
+        ctk.CTkButton(preset_row, text="Clear Log", width=110,
+                      command=self._clear_log).pack(side="left", padx=0, pady=4)
 
     # -------------------------------------------------------------------------
     # Send methods
@@ -216,6 +220,26 @@ class App(ctk.CTk):
             self._log(f"Preset loaded: {data.get('name', path)}")
         except (KeyError, ValueError) as e:
             messagebox.showerror("Preset Error", f"Invalid preset format:\n{e}")
+
+    def _clear_log(self):
+        """Clears all content from the log field."""
+        self.log_box.configure(state="normal")
+        self.log_box.delete("1.0", "end")
+        self.log_box.configure(state="disabled")
+
+    def _export_log(self):
+        """Writes the current log content to a .txt file chosen via file dialog."""
+        content = self.log_box.get("1.0", "end").strip()
+        if not content:
+            messagebox.showinfo("Export Log", "Log is empty, nothing to export.")
+            return
+        path = filedialog.asksaveasfilename(
+            defaultextension=".txt",
+            filetypes=[("Text file", "*.txt")])
+        if path:
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(content)
+            self._log(f"Log exported: {path}")
 
     # -------------------------------------------------------------------------
     # Log
