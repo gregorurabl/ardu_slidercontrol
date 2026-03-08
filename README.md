@@ -378,6 +378,7 @@ The housing was later modified to increase internal volume for the additional ca
 
 <details>
 <summary>Show Photos</summary>
+
 ![image (9)](https://github.com/user-attachments/assets/3e00675c-9bf6-42bb-94b2-72b41b06fc5e)
 ![image (10)](https://github.com/user-attachments/assets/b407b3cb-b684-4bd1-9aa5-fee09aea446c)
 ![image (7)](https://github.com/user-attachments/assets/8d7ac38e-9bfa-4386-b78f-8393ffd9c3dc)
@@ -393,6 +394,7 @@ Original Housing before raising lid
 
 <details>
 <summary>Show Photos</summary>
+   
 ![image (1)](https://github.com/user-attachments/assets/7f87cc37-3e26-4848-8b87-030039ecb564)
 ![image (2)](https://github.com/user-attachments/assets/4b8538b5-b228-4e78-84f2-9b9a01a2033c)
 ![image (3)](https://github.com/user-attachments/assets/746a09bd-04a1-4035-9f70-b4e28effbdca)
