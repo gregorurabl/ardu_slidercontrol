@@ -19,14 +19,14 @@ SPEED_PERCENT_DIVISOR = 12  # steps/s divided by this value = percentage
 # --- Distance -----------------------------------------------------------------
 # slider_length_long / slider_length_short from the .ino
 DISTANCE_MIN_STEPS = 0
-DISTANCE_MAX_STEPS = 34000
-DISTANCE_SHORT_STEPS = 17000  # slider_length_short
-DISTANCE_LONG_STEPS = 34000   # slider_length_long
+DISTANCE_MAX_STEPS = 36000
+DISTANCE_SHORT_STEPS = 18000  # slider_length_short
+DISTANCE_LONG_STEPS = 36000   # slider_length_long
 
 # DUMMY VALUE – must be calibrated with the actual hardware setup!
 # Formula: steps_per_mm = (motor full steps/rev * microstep divisor) / (belt pitch mm * drive pulley teeth)
 # Example: Nema17, 200 steps/rev, 1/1 microstep, GT2 belt 2mm pitch, 20-tooth pulley: 200 / (2*20) = 5 steps/mm
-STEPS_PER_MM = 5.0  # DUMMY – calibrate before use!
+STEPS_PER_MM = 39.3701  # Calibrated: 1000 steps = 1 inch (25.4 mm)
 
 # --- Ramp (acceleration) ------------------------------------------------------
 # Upper limit is dynamic: max. distance / 2 (as enforced in the Arduino)

@@ -6,6 +6,7 @@
 
 from typing import List
 import threading
+import time
 import serial
 import serial.tools.list_ports
 from config import SERIAL_BAUD, SERIAL_TIMEOUT
@@ -18,16 +19,29 @@ def list_ports() -> List[str]:
 
 class SerialHandler:
     def __init__(self, on_receive=None):
-        # on_receive: optional callback(str) for incoming controller messages
+        # on_receive: primary callback(str) for incoming controller messages
         self._port = None
         self._on_receive = on_receive
+        self._extra_listeners = []
         self._read_thread = None
         self._running = False
+
+    def add_listener(self, callback):
+        """Registers an additional receive callback (e.g. calibration window)."""
+        if callback not in self._extra_listeners:
+            self._extra_listeners.append(callback)
+
+    def remove_listener(self, callback):
+        """Removes a previously registered extra callback."""
+        if callback in self._extra_listeners:
+            self._extra_listeners.remove(callback)
 
     def connect(self, port: str) -> bool:
         """Opens the connection to the selected COM port. Returns True on success."""
         try:
             self._port = serial.Serial(port, SERIAL_BAUD, timeout=SERIAL_TIMEOUT)
+            # Arduino resets on DTR when the port opens – wait for it to finish booting
+            time.sleep(2)
             self._running = True
             self._read_thread = threading.Thread(target=self._read_loop, daemon=True)
             self._read_thread.start()
@@ -52,6 +66,7 @@ class SerialHandler:
             raise ConnectionError("Not connected.")
         # Arduino parser expects \\n as the terminating character
         self._port.write((command + "\n").encode("utf-8"))
+        self._port.flush()
 
     def build_normal_command(self, speed: int, distance: int, ramp: int) -> str:
         """Builds the serial command string for Normal mode."""
@@ -63,18 +78,25 @@ class SerialHandler:
         return f"timelapse,{speed},{distance},{ramp},{time_s},{subdivisions}"
 
     def build_rth_command(self) -> str:
-        """Builds the serial command string for Return to Home."""
-        return "rth,0,0,0,0,0"
+        return "rth"
+
+    def build_start_command(self) -> str:
+        return "start"
+
+    def build_stop_command(self) -> str:
+        return "stop"
 
     def _read_loop(self):
         """Background thread: continuously reads responses from the controller."""
         while self._running and self._port and self._port.is_open:
             try:
                 line = self._port.readline().decode("utf-8", errors="replace").strip()
-                if line and self._on_receive:
-                    self._on_receive(line)
+                if line:
+                    if self._on_receive:
+                        self._on_receive(line)
+                    for cb in list(self._extra_listeners):
+                        cb(line)
             except serial.SerialException:
-                # Connection interrupted (e.g. USB unplugged)
                 self._running = False
                 if self._on_receive:
                     self._on_receive("[Connection lost]")

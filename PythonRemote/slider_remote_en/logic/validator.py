@@ -18,9 +18,9 @@ def validate_normal(speed_steps: int, distance_steps: int, ramp_steps: int) -> O
     """Validates parameters for Normal mode. Returns an error message or None."""
     if not (SPEED_MIN_STEPS <= speed_steps <= SPEED_MAX_STEPS):
         return f"Speed must be between {SPEED_MIN_STEPS} and {SPEED_MAX_STEPS} steps/s."
-    if not (DISTANCE_MIN_STEPS <= distance_steps <= DISTANCE_MAX_STEPS):
-        return f"Distance must be between {DISTANCE_MIN_STEPS} and {DISTANCE_MAX_STEPS} steps."
-    ramp_max = distance_steps // 2
+    if not (-DISTANCE_MAX_STEPS <= distance_steps <= DISTANCE_MAX_STEPS) or distance_steps == 0:
+        return f"Distance must be between -{DISTANCE_MAX_STEPS} and {DISTANCE_MAX_STEPS} steps (non-zero)."
+    ramp_max = abs(distance_steps) // 2
     if not (RAMP_MIN_STEPS <= ramp_steps <= ramp_max):
         return f"Ramp must be between {RAMP_MIN_STEPS} and {ramp_max} steps (max. distance / 2)."
     return None

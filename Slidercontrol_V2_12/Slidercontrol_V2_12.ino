@@ -148,7 +148,7 @@ short motorDirection = 1; // clockwise
 int speed_set = 600;
 int raise_speed_by = 60;
 int speed_max = 1200; // -> 10.000 with Microstepping. -> 1.200 without Microstepping
-long distance_set = 33000;
+long distance_set = 17000;
 int raise_distance_by = 1000;
 int ramp_set = 0;
 short ramp_steps_by = 100;
@@ -173,8 +173,8 @@ short raise_steps_by = 1;
 int steps_count = 0;
 
 //--slider length in steps
-long slider_length_long = 34000; 
-long slider_length_short = 17000;
+long slider_length_long = 36000; 
+long slider_length_short = 18000;
 
 //////////////////////////////////
 //  Draw UI  
@@ -538,8 +538,7 @@ if (millis() >= pingTimer && sonar_attached == true) {   // pingSpeed millisecon
                 token=strtok(NULL, delimiter_comma);
             }
               message_pos = 0;      //Reset for the next message
-            }
-
+            
               for(int i=0;i<=5;i++)
                   { //Save pure Values without Labels to new array
                     serialControlValues[i]= serialControlMessage[i].substring(serialControlMessage[i].lastIndexOf(":")+1,serialControlMessage[i].length());
@@ -563,14 +562,33 @@ if (millis() >= pingTimer && sonar_attached == true) {   // pingSpeed millisecon
               {
                 rth();
                 Serial.println("Return to Home started over Serial Communication");
-              }  
-              else
+              } 
+              else if (serialControlValues[0] == "start")
+              {
+              Serial.println("Free Run started over Serial Communication");
+              
+                    stepper.setMaxSpeed(speed_set);
+                    stepper.setRampLen(ramp_set); 
+                    currentPos = stepper.currentPosition();
+                    stepper.rotate(motorDirection);
+              }   
+              else if (serialControlValues[0] == "stop")
+              {
+              stepper.stop();
+              Serial.println("Free Run stopped over Serial Communication");
+                long traveled_distance = stepper.currentPosition()-currentPos;
+                String traveledMsg = "Manual Run stopped after ";
+                 if(traveled_distance<0){traveled_distance*=-1;}
+                 traveledMsg.concat(traveled_distance);
+                 traveledMsg.concat(" Steps.");
+                    Serial.println(traveledMsg);
+              }   
+                  else
               {
                 Serial.println("Invalid Command");
-              } 
-         }
-
-
+              }
+         }        // ← schließt: else // Full message received
+          }       // ← schließt: while (Serial.available() > 0)
 }
 // END OF LOOP
 
@@ -695,7 +713,7 @@ void doTimelapse(int speed_set, long time_set, int steps_set, long distance_set)
                     effective_delay = ms_time - camera_trigger_duration - 100; // Subtract trigger time and safety margins
                   }
                   stepperPause.setTime(effective_delay);
-                  } else {stepperPause.setTime(1);} // To prevent the motor from waiting the full Delay before even starting we start with a delay of 1ms. We have to wait at least that time because otherwise it would brick the stepperPause.expired() function later on.               
+                  } else {stepperPause.setTime(ms_time);} // To prevent the motor from waiting the full Delay before even starting we start with a delay of 1ms. We have to wait at least that time because otherwise it would brick the stepperPause.expired() function later on.               
                   stepperRunning = false;
                 }
             } else {
@@ -707,17 +725,20 @@ void doTimelapse(int speed_set, long time_set, int steps_set, long distance_set)
           }
            }
         }
-            Serial.print(distance_set);Serial.print("/");Serial.print(distance_set); Serial.print("\r\n");
-            
-            // Final photo at end position if camera is attached
-            if(camera_attached == true){
-              delay(50); // Small delay to avoid vibrations before final photo
-              triggerCamera();
-              Serial.print("Timelapse Complete - Total Photos: ");
-              Serial.println(photo_counter);
-            } else {
-              updateStr("Timelapse Complete."); 
-            }
+        Serial.print(distance_set);Serial.print("/");Serial.print(distance_set); Serial.print("\r\n");
+
+        // Wait for the last move to fully complete before triggering the final photo
+        while(stepper.stepsToDo() > 0) {}
+
+        // Final photo at end position if camera is attached
+        if(camera_attached == true){
+          delay(50); // Small delay to avoid vibrations before final photo
+          triggerCamera();
+          Serial.print("Timelapse Complete - Total Photos: ");
+          Serial.println(photo_counter);
+        } else {
+          updateStr("Timelapse Complete."); 
+        }
             
             delay(5000); //wait at end before RTH
             rth();
