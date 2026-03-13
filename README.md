@@ -6,6 +6,10 @@
 **Platform:** Arduino Mega 2560 (AZ-Delivery Clone)  
 **Slider:** Rollei / iFootage Shark S1
 
+**Photos:** https://github.com/gregorurabl/ardu_slidercontrol/tree/main/Fotos_Videos
+
+**Videos:** https://drive.google.com/drive/folders/1h0wJf8_ykMVB8sSwVJ3sm4PEZuROGbLa
+
 > **Work in Progress** - This documentation is incomplete and subject to change without notice.
 
 > **Disclaimer:** This project is shared for educational and personal reference purposes only. No support is provided. If you choose to replicate this project, you do so entirely at your own risk. The author accepts no responsibility for any damage to equipment, components, cameras, or any other property, nor for any personal injury, that may result from building or operating this or a similar system. Working with stepper motors, motor drivers and external power supplies involves voltages and currents that can cause permanent hardware damage if wired incorrectly. Always verify your wiring before applying power.
@@ -39,6 +43,15 @@
 ## Overview
 
 Slidercontrol V2.1 is a fully self-contained motorized camera slider controller built around an Arduino Mega 2560. It drives a NEMA 17 stepper motor with planetary gearbox via an A4988 driver and provides a touchscreen UI on a 3.5" TFT shield. An optional ultrasonic sensor acts as an automatic end-stop, and a galvanically isolated camera trigger fires a Canon DSLR in sync with slider movement for timelapse sequences.
+
+## Planned Features
+
+| Feature | Status |
+|---|---|
+| Timelapse runtime pre-calculation | Planned - display estimated total duration before a timelapse run starts, based on distance, subdivisions, delay and motor speed |
+| Desktop Remote Control | BETA ready - plattform (Windows/Linux/Mac OS) independent GUI for a serial remote control (Python)|
+| App Remote Control | Planned - a bluetooth remote control via amartphone app.|
+
 
 ### Project History - Fork of Mega-Testberichte.de
 
@@ -445,13 +458,6 @@ The iterative development process - including test prints, fit experiments and t
 ```
 
 ---
-
-### Planned Features
-
-| Feature | Status |
-|---|---|
-| Timelapse runtime pre-calculation | Planned - display estimated total duration before a timelapse run starts, based on distance, subdivisions, delay and motor speed |
-| App Remote Control | In Development - a bluetooth remote control via amartphone app.|
 
 ## 3. Pin Reference (Arduino Mega 2560)
 
