@@ -26,7 +26,7 @@ DISTANCE_LONG_STEPS = 36000   # slider_length_long
 # DUMMY VALUE – must be calibrated with the actual hardware setup!
 # Formula: steps_per_mm = (motor full steps/rev * microstep divisor) / (belt pitch mm * drive pulley teeth)
 # Example: Nema17, 200 steps/rev, 1/1 microstep, GT2 belt 2mm pitch, 20-tooth pulley: 200 / (2*20) = 5 steps/mm
-STEPS_PER_MM = 39.3701  # Calibrated: 1000 steps = 1 inch (25.4 mm)
+STEPS_PER_MM = 39.37  # Calibrated: 1000 steps = 25.4 mm (1 inch)
 
 # --- Ramp (acceleration) ------------------------------------------------------
 # Upper limit is dynamic: max. distance / 2 (as enforced in the Arduino)
