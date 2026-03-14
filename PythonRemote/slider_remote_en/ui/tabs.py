@@ -162,18 +162,20 @@ class NormalTab:
         self.cm_label.pack(side="left", padx=4)
 
         # Shortcuts: short / full slider length + direction toggle + RTH
+        self._short_steps = DISTANCE_SHORT_STEPS
+        self._long_steps  = DISTANCE_LONG_STEPS
         shortcut_row = ctk.CTkFrame(frame, fg_color="transparent")
         shortcut_row.pack(fill="x", pady=(0, 4))
         ctk.CTkLabel(shortcut_row, text="", width=130).pack(side="left")
         ctk.CTkButton(shortcut_row, text="Short", width=80,
-                      command=lambda: self.distance.set(DISTANCE_SHORT_STEPS)).pack(
+                      command=lambda: self.distance.set(self._short_steps)).pack(
             side="left", padx=(4, 2))
         ctk.CTkButton(shortcut_row, text="Long", width=80,
-                      command=lambda: self.distance.set(DISTANCE_LONG_STEPS)).pack(
+                      command=lambda: self.distance.set(self._long_steps)).pack(
             side="left", padx=2)
 
         # Direction toggle
-        self._direction = 1  # 1 = forward, -1 = reverse
+        self._direction = 1
         self.dir_btn = ctk.CTkButton(shortcut_row, text="Forward", width=90,
                                      fg_color="#2d6e2d",
                                      command=self._toggle_direction)
@@ -187,6 +189,12 @@ class NormalTab:
 
         # Set initial cm display
         self._on_distance_change(self.distance.get())
+
+    def update_shortcuts(self, short_steps: int, long_steps: int):
+        """Updates Short/Long button targets and distance slider max from calibration."""
+        self._short_steps = short_steps
+        self._long_steps = long_steps
+        self.distance.set_max(long_steps)
 
     def set_serial(self, serial_handler):
         """Called by App after construction so Free Run and RTH can send commands directly."""
@@ -343,14 +351,16 @@ class TimelapseTab:
         self.cm_label = ctk.CTkLabel(cm_row, text="= 0.00 cm", anchor="w")
         self.cm_label.pack(side="left", padx=4)
 
+        self._short_steps = DISTANCE_SHORT_STEPS
+        self._long_steps  = DISTANCE_LONG_STEPS
         shortcut_row = ctk.CTkFrame(frame, fg_color="transparent")
         shortcut_row.pack(fill="x", pady=(0, 4))
         ctk.CTkLabel(shortcut_row, text="", width=130).pack(side="left")
         ctk.CTkButton(shortcut_row, text="Short", width=80,
-                      command=lambda: self.distance.set(DISTANCE_SHORT_STEPS)).pack(
+                      command=lambda: self.distance.set(self._short_steps)).pack(
             side="left", padx=(4, 2))
         ctk.CTkButton(shortcut_row, text="Long", width=80,
-                      command=lambda: self.distance.set(DISTANCE_LONG_STEPS)).pack(
+                      command=lambda: self.distance.set(self._long_steps)).pack(
             side="left", padx=2)
 
         # Direction toggle
@@ -496,6 +506,12 @@ class TimelapseTab:
             self._update_runtime()
         except (ValueError, ZeroDivisionError):
             self._update_runtime()
+
+    def update_shortcuts(self, short_steps: int, long_steps: int):
+        """Updates Short/Long button targets and distance slider max from calibration."""
+        self._short_steps = short_steps
+        self._long_steps  = long_steps
+        self.distance.set_max(long_steps)
 
     def get_exposure_s(self) -> float:
         """Returns the selected exposure time in seconds."""

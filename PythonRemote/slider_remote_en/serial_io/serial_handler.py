@@ -13,8 +13,11 @@ from config import SERIAL_BAUD, SERIAL_TIMEOUT
 
 
 def list_ports() -> List[str]:
-    """Returns all available serial ports as a list."""
-    return [port.device for port in serial.tools.list_ports.comports()]
+    """Returns available serial ports, USB/ACM ports sorted first."""
+    all_ports = [port.device for port in serial.tools.list_ports.comports()]
+    usb_ports = [p for p in all_ports if "USB" in p or "ACM" in p or "usbserial" in p or "cu." in p]
+    other_ports = [p for p in all_ports if p not in usb_ports]
+    return usb_ports + other_ports
 
 
 class SerialHandler:

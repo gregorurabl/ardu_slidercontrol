@@ -5,7 +5,6 @@
 
 from config import (
     SPEED_MIN_STEPS, SPEED_MAX_STEPS, SPEED_PERCENT_DIVISOR,
-    STEPS_PER_MM
 )
 
 
@@ -21,12 +20,15 @@ def speed_steps_to_pct(steps: int) -> float:
 
 
 def steps_to_cm(steps: int) -> float:
-    """Converts steps to centimetres using the configured STEPS_PER_MM value."""
-    if STEPS_PER_MM <= 0:
+    """Converts steps to centimetres using the active calibration or config value."""
+    from logic.calibration_manager import get_steps_per_mm
+    spm = get_steps_per_mm()
+    if spm <= 0:
         return 0.0
-    return round(steps / (STEPS_PER_MM * 10), 2)
+    return round(abs(steps) / (spm * 10), 2)
 
 
 def cm_to_steps(cm: float) -> int:
     """Converts centimetres to steps. Inverse of steps_to_cm."""
-    return int(cm * STEPS_PER_MM * 10)
+    from logic.calibration_manager import get_steps_per_mm
+    return int(cm * get_steps_per_mm() * 10)

@@ -20,9 +20,8 @@ class CalibrationWindow(ctk.CTkToplevel):
     def __init__(self, parent, serial_handler, log_callback=None, normal_speed_steps=None):
         super().__init__(parent)
         self.title("Slider Calibration")
-        self.geometry("680x780")
-        self.resizable(False, False)
-        self.grab_set()
+        self.geometry("700x820")
+        self.resizable(True, True)
 
         self._serial = serial_handler
         self._log = log_callback or (lambda msg: None)
@@ -30,13 +29,13 @@ class CalibrationWindow(ctk.CTkToplevel):
         self._serial.add_listener(self._on_serial)
 
         # Length calibration state
-        self._len_phase = "idle"      # idle | running | stopped
+        self._len_phase = "idle"
         self._len_start_time = 0.0
 
         # Speed calibration state
         self._slider_length: int | None = None
         self._zero_confirmed = False
-        self._cal_phase = "idle"      # idle | running | done
+        self._cal_phase = "idle"
         self._speed_table: dict[int, float] = {}
         self._target_event = threading.Event()
         self._target_time = 0.0
@@ -44,8 +43,14 @@ class CalibrationWindow(ctk.CTkToplevel):
         self._current_cal_start = 0.0
         self._current_cal_estimated = 0.0
 
+        # Scrollable container – avoids blank-window bug on Linux
+        self._scroll = ctk.CTkScrollableFrame(self)
+        self._scroll.pack(fill="both", expand=True, padx=0, pady=0)
+
         self._build_ui()
         self.protocol("WM_DELETE_WINDOW", self._on_close)
+        # Defer grab_set so window is fully rendered first
+        self.after(200, self.grab_set)
 
     # -------------------------------------------------------------------------
     # Lifecycle
@@ -74,14 +79,58 @@ class CalibrationWindow(ctk.CTkToplevel):
     # UI construction
     # -------------------------------------------------------------------------
     def _build_ui(self):
-        ctk.CTkLabel(self, text="Slider Calibration",
+        ctk.CTkLabel(self._scroll, text="Slider Calibration",
                      font=ctk.CTkFont(size=16, weight="bold")).pack(pady=(12, 4))
 
         self._build_length_section()
         self._build_speed_section()
+        self._build_geometry_section()
+
+    def _build_geometry_section(self):
+        """Section 3: Slider geometry parameters saved alongside speed calibration."""
+        frame = ctk.CTkFrame(self._scroll)
+        frame.pack(fill="x", padx=12, pady=6)
+
+        ctk.CTkLabel(frame, text="3  –  Slider Geometry",
+                     font=ctk.CTkFont(size=13, weight="bold"), anchor="w").pack(
+            fill="x", padx=8, pady=(8, 4))
+
+        from config import DISTANCE_LONG_STEPS, DISTANCE_SHORT_STEPS, STEPS_PER_MM
+
+        def _field_row(parent, label, default, tooltip_text):
+            row = ctk.CTkFrame(parent, fg_color="transparent")
+            row.pack(fill="x", padx=8, pady=2)
+            ctk.CTkLabel(row, text=label, width=130, anchor="w").pack(side="left")
+            var = ctk.StringVar(value=str(default))
+            entry = ctk.CTkEntry(row, textvariable=var, width=100)
+            entry.pack(side="left", padx=(0, 8))
+            ctk.CTkLabel(row, text=tooltip_text, text_color="gray60",
+                         font=ctk.CTkFont(size=11), anchor="w").pack(side="left")
+            return var
+
+        self._geo_long_var  = _field_row(frame, "Long (steps)",
+                                          DISTANCE_LONG_STEPS,
+                                          "100% of usable rail length")
+        self._geo_short_var = _field_row(frame, "Short (steps)",
+                                          DISTANCE_SHORT_STEPS,
+                                          "Shorter setup (e.g. without extension rails, "
+                                          "typically ~50% of Long)")
+        self._geo_spm_var   = _field_row(frame, "Steps / mm",
+                                          STEPS_PER_MM,
+                                          "1000 steps = 25.4 mm on Rollei Shark S1 "
+                                          "with Stepperonline PG14")
+
+        ctk.CTkLabel(frame,
+                     text="Note: Long and Short Steps apply to serial control only.\n"
+                          "The onboard touchscreen uses slider_length_long / slider_length_short\n"
+                          "from the Arduino sketch (lines 176–177) and must be updated manually\n"
+                          "if your values differ from the defaults (36000 / 18000).",
+                     anchor="w", justify="left",
+                     text_color="gray60", font=ctk.CTkFont(size=11),
+                     ).pack(fill="x", padx=12, pady=(6, 10))
 
     def _build_length_section(self):
-        frame = ctk.CTkFrame(self)
+        frame = ctk.CTkFrame(self._scroll)
         frame.pack(fill="x", padx=12, pady=6)
 
         ctk.CTkLabel(frame, text="1  –  Slider Length Calibration",
@@ -132,7 +181,7 @@ class CalibrationWindow(ctk.CTkToplevel):
         self.len_apply_btn.pack(anchor="w", padx=8, pady=(4, 10))
 
     def _build_speed_section(self):
-        frame = ctk.CTkFrame(self)
+        frame = ctk.CTkFrame(self._scroll)
         frame.pack(fill="x", padx=12, pady=6)
 
         ctk.CTkLabel(frame, text="2  –  Speed Calibration",
@@ -362,12 +411,25 @@ class CalibrationWindow(ctk.CTkToplevel):
             text=f"All {len(CAL_SPEEDS)} runs complete. Save the calibration file.")
         self.progress_bar.set(1.0)
         self.progress_detail.configure(text="")
-        # Activate in memory immediately
-        set_active_calibration({
-            "slider_length_steps": self._slider_length,
-            "speed_calibration": {str(k): v for k, v in self._speed_table.items()},
-        })
+        set_active_calibration(self._build_cal_data())
         self.save_btn.configure(state="normal")
+
+    def _build_cal_data(self) -> dict:
+        """Assembles full calibration dict including geometry fields."""
+        try:
+            d_long  = int(self._geo_long_var.get())
+            d_short = int(self._geo_short_var.get())
+            spm     = float(self._geo_spm_var.get())
+        except ValueError:
+            from config import DISTANCE_LONG_STEPS, DISTANCE_SHORT_STEPS, STEPS_PER_MM
+            d_long, d_short, spm = DISTANCE_LONG_STEPS, DISTANCE_SHORT_STEPS, STEPS_PER_MM
+        return {
+            "slider_length_steps": self._slider_length,
+            "distance_long_steps": d_long,
+            "distance_short_steps": d_short,
+            "steps_per_mm": spm,
+            "speed_calibration": {str(k): v for k, v in self._speed_table.items()},
+        }
 
     def _save_cal(self):
         path = filedialog.asksaveasfilename(
@@ -377,6 +439,16 @@ class CalibrationWindow(ctk.CTkToplevel):
             parent=self)
         if not path:
             return
-        data = save_calibration(path, self._slider_length, self._speed_table)
+        try:
+            d_long  = int(self._geo_long_var.get())
+            d_short = int(self._geo_short_var.get())
+            spm     = float(self._geo_spm_var.get())
+        except ValueError:
+            messagebox.showwarning("Invalid Values",
+                                   "Check Long Steps, Short Steps and Steps/mm fields.",
+                                   parent=self)
+            return
+        data = save_calibration(path, self._slider_length, self._speed_table,
+                                d_long, d_short, spm)
         set_active_calibration(data)
         messagebox.showinfo("Saved", f"Calibration saved:\n{path}", parent=self)

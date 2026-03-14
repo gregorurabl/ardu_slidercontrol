@@ -431,6 +431,7 @@ class App(ctk.CTk):
         try:
             data = load_calibration(path)
             set_active_calibration(data)
+            self._apply_calibration_to_ui(data)
             name = os.path.basename(path)
             steps = data["slider_length_steps"]
             self.cal_status_lbl.configure(
@@ -438,6 +439,15 @@ class App(ctk.CTk):
             self._log(f"Calibration loaded: {path}")
         except (ValueError, KeyError, OSError) as e:
             messagebox.showerror("Calibration Error", f"Could not load calibration:\n{e}")
+
+    def _apply_calibration_to_ui(self, data: dict):
+        """Updates distance slider limits and shortcuts from calibration geometry."""
+        from config import DISTANCE_LONG_STEPS, DISTANCE_SHORT_STEPS
+        d_long  = int(data.get("distance_long_steps",  DISTANCE_LONG_STEPS))
+        d_short = int(data.get("distance_short_steps", DISTANCE_SHORT_STEPS))
+        for tab in (self.normal_tab, self.timelapse_tab):
+            tab.distance.set_max(d_long)
+            tab.update_shortcuts(d_short, d_long)
 
     def _open_calibration_window(self):
         if not self.serial.is_connected():
@@ -456,6 +466,7 @@ class App(ctk.CTk):
                 steps = cal["slider_length_steps"]
                 self.cal_status_lbl.configure(
                     text=f"Calibration active  ({steps} steps)", text_color="#6ec06e")
+                self._apply_calibration_to_ui(cal)
         win.protocol("WM_DELETE_WINDOW",
                      lambda: (win._on_close(), _on_close()))
 

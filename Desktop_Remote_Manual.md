@@ -203,7 +203,13 @@ Located at the top of the window.
 | Connect / Disconnect | Opens or closes the serial connection to the selected port |
 | Status indicator | Shows **Connected** (green) or **Disconnected** (red) |
 
-The application connects at **115200 baud** with a 1-second read timeout. The connection is managed in a background thread; the UI remains responsive at all times. If no port is found, the dropdown shows "No port found" — verify the USB connection and, on Linux, confirm group membership (see Section 2.2).
+The application connects at **115200 baud** with a 1-second read timeout. The connection is managed in a background thread; the UI remains responsive at all times.
+
+**Auto-connect:** On startup, if a serial port is detected, the application begins a 5-second countdown and connects automatically. During the countdown the Connect button displays `Cancel (Xs)` in red. Clicking it cancels the auto-connect and leaves the port disconnected. Auto-connect only runs once per application launch; subsequent connections must be initiated manually.
+
+When a connection is opened, the serial handler waits 2 seconds for the Arduino to finish its reset cycle (triggered by DTR on port open) before sending any data.
+
+If no port is found, the dropdown shows "No port found" — verify the USB connection and, on Linux, confirm group membership (see Section 2.2).
 
 ---
 
@@ -277,8 +283,8 @@ Toggles continuous free rotation. First press sends a `start` command and change
 **TIMELAPSE START**  
 Validates Timelapse tab parameters and sends a `timelapse` command. The combined wait time (`delay + exposure_s`) is sent as the `time` field. After the sequence completes, the controller automatically performs RTH; the application waits 35 s before resetting the connection to allow the return to finish.
 
-**RTH**  
-Sends an `rth` command. The controller reverses the motor and returns to the starting position at the current speed setting on the controller.
+**RTH (Return to Home)**  
+Sends an `rth` command. The controller reverses the motor and returns to the position it held when the session started — the point at which the Arduino's internal step counter was at zero (i.e. where the slider physically was when the controller was powered on or last reset). Speed is determined by the current speed setting on the controller's TFT display.
 
 ---
 
@@ -397,7 +403,7 @@ Runs the slider at 10 preset speed levels (10%–100%) and records the full-leng
 1. Click **Confirm Zero Position** to confirm the carriage is at the start of the rail. This unlocks **Start Speed Calibration**.
 2. Click **Start Speed Calibration**. The sequence runs fully automatically in a background thread.
 3. For each of the 10 speed levels, the application sends a Normal Run command for the full slider length, waits for the `Target Reached` message, records the elapsed time, then sends RTH and waits for the return before proceeding to the next speed. A progress bar and result table update in real time.
-4. Each individual run times out after 10 minutes. A timeout aborts the entire calibration; restart from Step 1.
+4. Each individual run times out after 10 minutes. If a timeout occurs, the sequence is aborted, a warning dialog is shown, and the **Start Speed Calibration** button is re-enabled. Section 1 (slider length) does not need to be repeated — click **Start Speed Calibration** again to retry Section 2 from the beginning. The timeout is a deadlock safeguard: the calibration thread blocks waiting for a `Target Reached` message from the controller; without a timeout, a serial dropout or controller hang would freeze the calibration UI indefinitely. Under normal operating conditions the 10-minute limit is never reached.
 5. When all 10 runs are complete, the **Save Calibration** button becomes active. The calibration is activated in memory immediately without requiring a save.
 6. Click **Save Calibration** and choose a filename (e.g. `shark_s1_2025.json`).
 
