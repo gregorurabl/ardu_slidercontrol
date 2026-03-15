@@ -23,20 +23,20 @@
 1. [Sources & Libraries](#1-sources--libraries)
    - [1.1 Project Base](#11-project-base)
    - [1.2 Arduino Libraries](#12-arduino-libraries)
-2. [Schematic](#schematic)
-3. [Hardware](#2-hardware)
+    - [Schematic](#schematic)
+2. [Hardware](#2-hardware)
    - [2.1 Main Components](#21-main-components)
    - [2.2 Hardware History & Incidents](#22-hardware-history--incidents)
    - [2.3 Stepper Motor & Gearbox](#23-stepper-motor--gearbox)
    - [2.4 Camera Trigger Circuit](#24-camera-trigger-circuit)
    - [2.5 Optional Ultrasonic End-Stop Sensor](#25-optional-ultrasonic-end-stop-sensor)
    - [2.6 Controller Housing](#26-controller-housing)
-4. [Pin Reference (Arduino Mega 2560)](#3-pin-reference-arduino-mega-2560)
+3. [Pin Reference (Arduino Mega 2560)](#3-pin-reference-arduino-mega-2560)
    - [3.1 TFT Display](#31-tft-display)
    - [3.2 Touchscreen (Resistive)](#32-touchscreen-resistive)
    - [3.3 Stepper Motor Driver (A4988)](#33-stepper-motor-driver-a4988)
    - [3.4 Sonar / Camera Trigger (shared)](#34-sonar--camera-trigger-shared)
-
+4. [Desktop Remote (Python)](#4-desktop-remote-python)
 ---
 
 
@@ -586,3 +586,25 @@ Per Mega-Testberichte.de, a VREF of **~0.8 V** on an R100 board was found to wor
 | ECHO_PIN | 49 | Sonar: echo input - Camera: not used |
 
 > **D47 and D49 are shared between the sonar module and the camera trigger.** Automatic detection at startup determines which module is active. Never connect both simultaneously.
+
+---
+
+## 4. Desktop Remote (Python)
+
+*Added March 2026*
+
+A Python desktop application for controlling the slider over USB from a computer. Built with [customtkinter](https://github.com/TomSchimansky/CustomTkinter).
+
+*[Screenshot]*
+
+The remote covers all three operating modes available via the touchscreen UI and adds preset management and a calibration tool:
+
+- **Normal Run** and **Timelapse** modes with all parameters (speed, distance, ramp, delay, subdivisions) configurable via sliders, including real-time cm readout for distance
+- **Direction control** (Forward / Reverse) per mode
+- **Manual Free Run** start/stop and Return to Home
+- **Preset save/load** - stores complete parameter sets for both modes as JSON files
+- **Calibration tool** - measures physical slider length and generates a per-speed timing table for accurate travel estimation
+- Serial **log panel** with export to .txt
+- Auto-reconnect after timelapse completion
+
+For setup and usage, refer to [`Desktop_Remote_Manual.md`](Desktop_Remote_Manual.md).
