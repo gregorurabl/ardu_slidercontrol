@@ -595,7 +595,7 @@ Per Mega-Testberichte.de, a VREF of **~0.8 V** on an R100 board was found to wor
 
 A Python desktop application for controlling the slider over USB from a computer. Built with [customtkinter](https://github.com/TomSchimansky/CustomTkinter).
 
-*[Screenshot]*
+![Image](https://github.com/user-attachments/assets/d710afda-784c-4a2c-99f9-e7c06e5dded3)
 
 The remote covers all three operating modes available via the touchscreen UI and adds preset management and a calibration tool:
 
