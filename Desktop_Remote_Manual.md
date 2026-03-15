@@ -39,6 +39,8 @@
 
 ## 1. Overview
 
+<img width="654" height="55" alt="Image" src="https://github.com/user-attachments/assets/27ca3386-30b1-4d01-b170-7b87589b6563" />
+
 Slider Remote Control is a desktop GUI for the Slidercontrol V2.1.2 Arduino firmware. It communicates with the controller over a standard USB serial connection and provides a graphical interface for all four operating modes:
 
 - **Normal Run** — single-pass movement over a set distance at constant speed
@@ -194,6 +196,8 @@ pyinstaller --onefile --windowed --name SliderRemote --collect-data customtkinte
 
 ### 4.1 Connection Bar
 
+<img width="521" height="37" alt="Image" src="https://github.com/user-attachments/assets/f712b8bd-f988-4f7f-a854-4f8279b7c55e" />
+
 Located at the top of the window.
 
 | Control | Function |
@@ -214,6 +218,8 @@ If no port is found, the dropdown shows "No port found" — verify the USB conne
 ---
 
 ### 4.2 Normal Tab
+
+<img width="660" height="243" alt="Image" src="https://github.com/user-attachments/assets/6da8d8e8-f027-446c-b111-70a26312a677" />
 
 Controls for a single-pass slider movement at constant speed.
 
@@ -237,6 +243,8 @@ A **progress bar** is shown below the tab during an active Normal run. Progress 
 ---
 
 ### 4.3 Timelapse Tab
+
+<img width="659" height="373" alt="Image" src="https://github.com/user-attachments/assets/095a4fb7-2bee-4a53-8f98-99ec3ee07383" />
 
 Controls for a stepped timelapse sequence with optional camera shutter trigger.
 
@@ -272,6 +280,8 @@ The runtime field is also editable: enter a target duration in `h:mm:ss`, `m:ss`
 
 ### 4.4 Action Buttons
 
+<img width="654" height="55" alt="Image" src="https://github.com/user-attachments/assets/27ca3386-30b1-4d01-b170-7b87589b6563" />
+
 Four large buttons send immediate commands to the controller. All buttons require an active connection; a warning dialog is shown if the port is not connected. A 500 ms debounce prevents accidental rapid repeated sends.
 
 **NORMAL START**  
@@ -289,6 +299,8 @@ Sends an `rth` command. The controller reverses the motor and returns to the pos
 ---
 
 ### 4.5 Preset System
+
+<img width="646" height="44" alt="Image" src="https://github.com/user-attachments/assets/fcd27e74-9c75-4759-b3a3-eea2cd4b602d" />
 
 Located in the utility row below the action buttons.
 
@@ -321,6 +333,8 @@ The `presets/` folder is created automatically on first save.
 
 ### 4.6 Log Output
 
+<img width="658" height="162" alt="Image" src="https://github.com/user-attachments/assets/deb6526e-aeab-4349-8a28-70c9dffca508" />
+
 A scrolling read-only text field displaying all application events.
 
 | Control | Function |
@@ -335,6 +349,8 @@ Incoming controller messages are prefixed with `Controller:`. High-frequency ste
 
 ### 4.7 Calibration Bar
 
+<img width="423" height="44" alt="Image" src="https://github.com/user-attachments/assets/1387bff4-1f51-47d2-86f3-d9aa4c7dab19" />
+
 Located at the bottom of the window.
 
 | Control | Function |
@@ -348,6 +364,9 @@ The calibration affects the cm distance readout, the Normal run progress bar acc
 ---
 
 ## 5. Calibration System
+
+<img width="699" height="810" alt="Image" src="https://github.com/user-attachments/assets/842c899a-3fce-47b3-a92a-b834a616d4d7" />
+<img width="693" height="208" alt="Image" src="https://github.com/user-attachments/assets/c71d0fb4-0cc9-4584-818c-e2d2144f346a" />
 
 ### 5.1 Overview and Purpose
 
