@@ -80,34 +80,38 @@ The application is built with Python, CustomTkinter, and pyserial. It runs from 
 
 ### 2.2 Linux
 
-1. Ensure Python 3 and pip are installed:
+Install Python 3, the full standard library, and the Tkinter system package:
 
    ```
-   sudo apt install python3 python3-pip
+   sudo apt install python3-full python3-tk
    ```
 
-2. Install dependencies:
-
-   ```
-   pip3 install customtkinter pyserial
-   ```
-
-3. Grant serial port access (required on most distributions):
+Grant serial port access (required on most distributions):
 
    ```
    sudo usermod -aG dialout $USER
    ```
 
-   Log out and back in for the group change to take effect.
+Log out and back in for the group change to take effect.
 
-4. Start the application:
+Create and activate a virtual environment, then install dependencies:
 
    ```
    cd path/to/slider_remote_en
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+Start the application (venv must be active):
+
+   ```
    python3 main.py
    ```
 
-5. The port appears as `/dev/ttyUSB0` or `/dev/ttyACM0`. Verify with `ls /dev/tty*` before and after plugging the USB cable if no port is detected.
+To activate the venv in a future session: source venv/bin/activate
+
+The port appears as /dev/ttyUSB0 or /dev/ttyACM0. Verify with ls /dev/tty* before and after plugging the USB cable if no port is detected.
 
 ### 2.3 macOS
 
@@ -155,8 +159,12 @@ The binary is created at `dist\SliderRemote.exe`. It can be copied to any Window
 
 ### 3.2 Linux
 
+Activate the venv first, then install PyInstaller into it:
+
 ```
 cd path/to/slider_remote_en
+source venv/bin/activate
+pip install pyinstaller
 python3 build.py
 ```
 
