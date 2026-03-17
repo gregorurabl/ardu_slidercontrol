@@ -196,6 +196,10 @@ class NormalTab:
         self._long_steps = long_steps
         self.distance.set_max(long_steps)
 
+    def get_direction(self) -> int:
+        """Returns current direction: 1 = Forward, -1 = Reverse."""
+        return self._direction
+
     def set_serial(self, serial_handler):
         """Called by App after construction so Free Run and RTH can send commands directly."""
         self._serial = serial_handler
@@ -413,7 +417,7 @@ class TimelapseTab:
         self._runtime_var = ctk.StringVar(value="–")
         self._runtime_entry = ctk.CTkEntry(runtime_row, textvariable=self._runtime_var, width=120)
         self._runtime_entry.pack(side="left", padx=(4, 4))
-        ctk.CTkLabel(runtime_row, text="(h:mm:ss – edit to set delay)",
+        ctk.CTkLabel(runtime_row, text="(h:mm:ss – enter larger value to add pre-start delay)",
                      anchor="w", text_color="gray60",
                      font=ctk.CTkFont(size=11)).pack(side="left")
         self._runtime_entry.bind("<Return>", self._on_runtime_entry)
@@ -421,6 +425,7 @@ class TimelapseTab:
 
         self._on_distance_change(self.distance.get())
         self.delay.on_change(lambda _: self._update_runtime())
+        self._pre_start_delay_s = 0.0
         self._update_runtime()
 
     def _on_exp_slider(self, value):
@@ -437,6 +442,7 @@ class TimelapseTab:
 
     def _update_runtime(self):
         """Recalculates and displays the estimated total timelapse duration."""
+        self._pre_start_delay_s = 0.0  # reset when any parameter changes
         try:
             from logic.calibration_manager import get_active_calibration, interpolate_travel_time
             subdivisions = int(self.subdivisions.get())
@@ -463,7 +469,9 @@ class TimelapseTab:
 
     def _on_runtime_entry(self, _event=None):
         """
-        User typed a duration → back-calculate the required delay.
+        User typed a duration → compare with calculated value.
+        Larger: extra time becomes pre-start delay.
+        Smaller: warn and revert.
         Accepted formats: h:mm:ss or m:ss or plain seconds.
         """
         raw = self._runtime_var.get().strip()
@@ -475,9 +483,15 @@ class TimelapseTab:
                 target_s = int(parts[0]) * 60 + int(parts[1])
             else:
                 target_s = int(raw)
+        except (ValueError, IndexError):
+            self._update_runtime()
+            return
 
+        # Calculate the current base duration
+        try:
             from logic.calibration_manager import get_active_calibration, interpolate_travel_time
             subdivisions = int(self.subdivisions.get())
+            delay_s = self.delay.get()
             exposure_s = _EXPOSURE_SECONDS[self._exp_idx]
             speed_pct = self.speed.get()
             distance_steps = int(self.distance.get())
@@ -490,20 +504,23 @@ class TimelapseTab:
             else:
                 travel_s = substep_steps / max(speed_pct_to_steps(speed_pct), 1)
 
-            # Solve: target_s = subdivisions * (travel_s + 0.05 + exposure_s + delay_s) + 5
-            delay_s = ((target_s - 5) / max(subdivisions, 1)) - travel_s - 0.05 - exposure_s
-            delay_s = max(0.0, delay_s)
+            base_s = int(subdivisions * (travel_s + 0.05 + exposure_s + delay_s) + 5)
 
-            if delay_s > TIME_MAX_S:
-                delay_s = TIME_MAX_S
+            if target_s < base_s:
                 from tkinter import messagebox
                 messagebox.showwarning(
-                    "Delay capped at 15 min",
-                    f"The requested duration exceeds the maximum delay of {TIME_MAX_S}s.\n"
-                    "Delay has been set to 15 min. Use more subdivisions for a longer run.")
-
-            self.delay.set(int(delay_s))
-            self._update_runtime()
+                    "Cannot reduce duration",
+                    "The estimated duration cannot be reduced by editing this field.\n"
+                    "Adjust Speed, Delay, Exposure, or Subdivisions instead.")
+                self._pre_start_delay_s = 0.0
+                self._update_runtime()
+            else:
+                self._pre_start_delay_s = float(target_s - base_s)
+                # Show the entered value including pre-start delay
+                h, rem = divmod(target_s, 3600)
+                m, s = divmod(rem, 60)
+                self._runtime_var.set(
+                    f"{h}:{m:02d}:{s:02d}" if h > 0 else f"0:{m:02d}:{s:02d}")
         except (ValueError, ZeroDivisionError):
             self._update_runtime()
 
@@ -541,6 +558,7 @@ class TimelapseTab:
             "time_s": int(self.delay.get()),
             "subdivisions": int(self.subdivisions.get()),
             "exposure_s": self.get_exposure_s(),
+            "pre_start_delay_s": self._pre_start_delay_s,
         }
 
     def set_values(self, speed_pct: float, distance_steps: int, ramp_steps: int,

@@ -210,21 +210,50 @@ class App(ctk.CTk):
             return
         v = self.timelapse_tab.get_values()
         speed_steps = speed_pct_to_steps(v["speed_pct"])
-        # Total wait time = user delay + exposure time (motor must not move during exposure)
         total_time_s = int(v["time_s"] + v["exposure_s"])
         error = validate_timelapse(speed_steps, v["distance_steps"], 0,
                                    total_time_s, v["subdivisions"])
         if error:
             messagebox.showwarning("Invalid Input", error)
             return
+        pre_delay = v.get("pre_start_delay_s", 0)
         cmd = self.serial.build_timelapse_command(
             speed_steps, v["distance_steps"], 0, total_time_s, v["subdivisions"])
-        self._send(cmd)
-        self._timelapse_running = True
+        if pre_delay > 0:
+            self._log(f"Pre-start delay: {pre_delay}s – starting timelapse after countdown")
+            self._start_prestart_countdown(pre_delay, cmd)
+        else:
+            self._send(cmd)
+
+    def _start_prestart_countdown(self, delay_s: float, cmd: str):
+        """Counts down delay_s in the progress bar, then sends the timelapse command."""
+        self._prestart_end = time.monotonic() + delay_s
+        self._prestart_cmd = cmd
+        self._prestart_total = delay_s
+        self._prestart_tick()
+
+    def _prestart_tick(self):
+        remaining = self._prestart_end - time.monotonic()
+        if remaining <= 0:
+            self._progress_bar.set(1.0)
+            self._progress_lbl.configure(text="Starting timelapse...")
+            self._send(self._prestart_cmd)
+            self.after(500, self._reset_progress)
+            return
+        elapsed = self._prestart_total - remaining
+        ratio = elapsed / self._prestart_total
+        self._progress_bar.set(ratio)
+        self._progress_lbl.configure(
+            text=f"Pre-start delay: {int(remaining)}s remaining")
+        self.after(200, self._prestart_tick)
 
     def _toggle_manual(self):
         self._freerun_active = not self._freerun_active
         if self._freerun_active:
+            direction = self.normal_tab.get_direction()
+            dir_cmd = self.serial.build_direction_command(direction)
+            self.serial.send(dir_cmd)
+            self._log(f"Sent: {dir_cmd}")
             self.serial.send(self.serial.build_start_command())
             self._log("Sent: start")
             self.manual_btn.configure(text="STOP", fg_color="#8b2020")

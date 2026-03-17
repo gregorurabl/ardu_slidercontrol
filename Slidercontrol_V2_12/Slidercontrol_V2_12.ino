@@ -582,7 +582,16 @@ if (millis() >= pingTimer && sonar_attached == true) {   // pingSpeed millisecon
                  traveledMsg.concat(traveled_distance);
                  traveledMsg.concat(" Steps.");
                     Serial.println(traveledMsg);
-              }   
+              }   else if (serialControlValues[0] == "direction")
+                    {
+                        if (serialControlValues[1].toInt() == -1) {
+                            motorDirection = -1;
+                            Serial.println("Direction: Reverse");
+                        } else {
+                            motorDirection = 1;
+                            Serial.println("Direction: Forward");
+                        }
+                    }
                   else
               {
                 Serial.println("Invalid Command");

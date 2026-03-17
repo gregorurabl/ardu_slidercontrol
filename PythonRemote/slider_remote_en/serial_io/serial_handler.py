@@ -89,6 +89,10 @@ class SerialHandler:
     def build_stop_command(self) -> str:
         return "stop"
 
+    def build_direction_command(self, direction: int) -> str:
+        """Sets motorDirection on the Arduino. direction: 1=Forward, -1=Reverse."""
+        return f"direction,{direction},0,0,0,0"
+
     def _read_loop(self):
         """Background thread: continuously reads responses from the controller."""
         while self._running and self._port and self._port.is_open:

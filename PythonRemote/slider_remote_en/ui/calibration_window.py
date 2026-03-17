@@ -127,7 +127,12 @@ class CalibrationWindow(ctk.CTkToplevel):
                           "if your values differ from the defaults (36000 / 18000).",
                      anchor="w", justify="left",
                      text_color="gray60", font=ctk.CTkFont(size=11),
-                     ).pack(fill="x", padx=12, pady=(6, 10))
+                     ).pack(fill="x", padx=12, pady=(6, 6))
+
+        self.save_btn = ctk.CTkButton(frame, text="Save Calibration",
+                                      state="disabled", fg_color="#2d6e2d",
+                                      command=self._save_cal)
+        self.save_btn.pack(anchor="w", padx=8, pady=(4, 10))
 
     def _build_length_section(self):
         frame = ctk.CTkFrame(self._scroll)
@@ -240,12 +245,6 @@ class CalibrationWindow(ctk.CTkToplevel):
             lbl = ctk.CTkLabel(row, text="–", width=150, anchor="center", text_color="gray60")
             lbl.pack(side="left")
             self._table_rows[spd] = lbl
-
-        # Save button
-        self.save_btn = ctk.CTkButton(frame, text="Save Calibration",
-                                      state="disabled", fg_color="#2d6e2d",
-                                      command=self._save_cal)
-        self.save_btn.pack(anchor="w", padx=8, pady=(4, 10))
 
     # -------------------------------------------------------------------------
     # Length calibration logic
